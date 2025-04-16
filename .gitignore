@@ -74,8 +74,6 @@ settings_local.py
 
 # Scrapy specific
 .scrapy/
-*.csv
-*.json
 
 # MySQL files (if exported or stored locally)
 *.sql
