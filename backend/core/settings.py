@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('DJANGO_KEY')
 DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS.split('') if host.strip()]
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS.split(',') if host.strip()]
 
 # Application definition
 
