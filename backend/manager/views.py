@@ -1,22 +1,18 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .models import Story
-from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone
 from datetime import datetime
-from pathlib import Path
-import environ, os
+import os
+from huggingface_hub import InferenceClient
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
-
-environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))
-
-PINECONE=env('PINECONE')
+PINECONE=os.getenv('PINECONE')
 pc = Pinecone(api_key=PINECONE)
 index = pc.Index("story")
-model = SentenceTransformer("dunzhang/stella_en_1.5B_v5", trust_remote_code=True).cuda()
+hf_client = InferenceClient(
+    provider="hf-inference",
+    api_key=os.getenv('HF_KEY')
+)
 
 def storyid_to_pinecone(story_id):
     story = get_object_or_404(Story, id=story_id)
@@ -29,7 +25,12 @@ def storyid_to_pinecone(story_id):
 # for embedding a collection of chapters
 def embed_all_chapters(chapters):
     content = " ".join([chapter.content for chapter in chapters])
-    content_embedding = model.encode(content)
+    content_embedding = hf_client.feature_extraction(   
+        inputs=content,
+        model="dunzhang/stella_en_1.5B_v5",
+        truncation_direction='Right',
+        normalize=True,
+    )
 
     return content_embedding
 
@@ -47,7 +48,12 @@ def upsert(story, embedding):
 
 def query(request):
     content = request.body.decode('utf-8')
-    content_embedding = model.encode(content, "s2p_query")
+    content_embedding = hf_client(
+        inputs=content,
+        model="dunzhang/stella_en_1.5B_v5",
+        truncation_direction='Right',
+        normalize=True,
+    )
     content_embedding = content_embedding.tolist()
 
     response = index.query(vector=content_embedding, top_k=5, include_metadata=True)

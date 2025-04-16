@@ -11,24 +11,23 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import environ, os
-
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+from dotenv import load_dotenv 
+from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-SECRET_KEY = env('DJANGO_KEY')
+SECRET_KEY = os.getenv('DJANGO_KEY')
 
-DEBUG = env('DEBUG')
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS.split('') if host.strip()]
 
 # Application definition
 
@@ -87,11 +86,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
-        'NAME': env('DB_NAME'),          
-        'USER': env('DB_USER'),         
-        'PASSWORD': env('DB_PASS'),     
-        'HOST': env('DB_HOST'),                   
-        'PORT': env('DB_PORT'),                        
+        'NAME': os.getenv('DB_NAME'),          
+        'USER': os.getenv('DB_USER'),         
+        'PASSWORD': os.getenv('DB_PASS'),     
+        'HOST': os.getenv('DB_HOST'),                   
+        'PORT': os.getenv('DB_PORT'),                        
     }
 }
 
