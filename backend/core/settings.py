@@ -53,11 +53,17 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://www.dwindled.dev",
+    "https://dwindled.dev",
+    "https://api.dwindled.dev",
+    ]
 
-#CORS_ALLOWED_ORIGINS = ["http://localhost:8081"]
-
-#CSRF_TRUSTED_ORIGINS = ["http://localhost:8081"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://www.dwindled.dev",
+    "https://dwindled.dev",
+    "https://api.dwindled.dev",
+    ]
 
 ROOT_URLCONF = 'core.urls'
 

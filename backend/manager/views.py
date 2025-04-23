@@ -25,11 +25,9 @@ def storyid_to_pinecone(story_id):
 # for embedding a collection of chapters
 def embed_all_chapters(chapters):
     content = " ".join([chapter.content for chapter in chapters])
-    content_embedding = hf_client.feature_extraction(   
-        inputs=content,
-        model="dunzhang/stella_en_1.5B_v5",
-        truncation_direction='Right',
-        normalize=True,
+    content_embedding = hf_client.feature_extraction(
+        text=content,
+        model="mixedbread-ai/mxbai-embed-large-v1",
     )
 
     return content_embedding
@@ -48,11 +46,9 @@ def upsert(story, embedding):
 
 def query(request):
     content = request.body.decode('utf-8')
-    content_embedding = hf_client(
-        inputs=content,
-        model="dunzhang/stella_en_1.5B_v5",
-        truncation_direction='Right',
-        normalize=True,
+    content_embedding = hf_client.feature_extraction(
+        text=content,
+        model="mixedbread-ai/mxbai-embed-large-v1",
     )
     content_embedding = content_embedding.tolist()
 
