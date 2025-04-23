@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const search = async (text) => {
     try {
-        const response = await axios.post("http://127.0.0.1:8000/query/", text);
+        const response = await axios.post("http://api.dwindled.dev/query/", text);
         console.log(response.data);
         return response.data;
     } catch (error) {
