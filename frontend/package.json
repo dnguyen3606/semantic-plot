@@ -12,8 +12,11 @@
   "dependencies": {
     "@mantine/core": "^7.17.5",
     "@mantine/hooks": "^7.17.5",
+    "@tabler/icons-react": "^3.31.0",
+    "i18next": "^25.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-i18next": "^15.5.1",
     "react-router-dom": "^7.5.2"
   },
   "devDependencies": {
