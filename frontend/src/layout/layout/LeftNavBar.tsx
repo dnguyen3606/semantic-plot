@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import Views from '../Views';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import navigationConfig from '../../configs/navigation.config';
 import { LinksGroup } from '../LinksGroup';
-import classes from './LeftSideBar.module.css';
-import {Box, Card, Group} from '@mantine/core';
+import classes from './LeftNavBar.module.css';
+import {Box, Group} from '@mantine/core';
 
-function SideBar() {
+export default function LeftSideBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [active, setActive] = useState('');
@@ -50,7 +49,10 @@ function SideBar() {
           }}
           key={index}
         >
-          <item.icon className={classes.linkIcon} stroke={1.5} />
+          {item.path.split('/')[1] === active ? 
+            <item.iconActive className={classes.linkIcon} stroke={1.5} /> : 
+            <item.icon className={classes.linkIcon} stroke={1.5}/>
+          }
           <span>{item.title}</span>
         </Link>
       );
@@ -61,51 +63,10 @@ function SideBar() {
     <nav className={classes.navbar}>
       <div className={classes.navbarMain}>
         <Group className={classes.header} justify="space-between">
-          Dwindled
+          Dwindled.dev
         </Group>
         {links}
       </div>
     </nav>
-  );
-}
-
-export default function LeftSideBar() {
-  return (
-    <div
-      style={{
-        overflow: 'hidden',
-        backgroundColor: 'rgb(236,236,236)',
-        display: 'flex',
-        flex: '1 1 auto',
-        height: '100vh',
-      }}
-    >
-      <SideBar />
-      <div
-        style={{
-          padding: '2rem',
-          backgroundColor: '#ffffff',
-          flex: 1,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100vh',
-        }}
-      >
-        <Card
-          style={{
-            overflowY: 'auto',
-            maxHeight: '100%',
-            width: '100%',
-            flex: 1,
-          }}
-          radius={15}
-          withBorder
-          p={40}
-        >
-          <Views />
-        </Card>
-      </div>
-    </div>
   );
 }

@@ -66,11 +66,23 @@ const AllRoutes = (_props: AllRoutesProps) => {
 
 const Views = (props: ViewsProps) => {
   return (
-    <Suspense fallback={
-      <LoadingScreen/>
-    }>
-      <AllRoutes {...props} />
-    </Suspense>
+    <div
+      style={{
+        padding: '2rem',
+        backgroundColor: '#ffffff',
+        flex: 1,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+      }}
+    >
+      <Suspense fallback={
+        <LoadingScreen/>
+      }>
+        <AllRoutes {...props} />
+      </Suspense>
+    </div>
   )
 }
 

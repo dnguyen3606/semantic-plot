@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Group, Box, Collapse, ThemeIcon, Text, UnstyledButton, rem} from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
-import classes from './layout/LeftSideBar.module.css';
+import classes from './layout/LeftNavBar.module.css';
 import {useNavigate} from "react-router-dom";
 
 interface LinksGroupProps {

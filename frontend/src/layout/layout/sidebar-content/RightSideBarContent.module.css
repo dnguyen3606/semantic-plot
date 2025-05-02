@@ -1,0 +1,53 @@
+.sidebar {
+    height: 100vh;
+    width: rem(300px);
+    padding: var(--mantine-spacing-md);
+    display: flex;
+    flex-direction: column;
+    border-left: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+.sidebarMain {
+    overflow-y: auto;
+    flex: 1;
+}
+.sidebarSection {
+    margin-bottom: var(--mantine-spacing-md);
+    padding-bottom: var(--mantine-spacing-sm);
+    border-bottom: rem(2px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+.sidebarHeader {
+    font-size: rem(16px);
+    font-weight: bold;
+    margin-bottom: var(--mantine-spacing-xs);
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
+}
+.sidebarText {
+    font-size: rem(14px);
+    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-2));
+    line-height: 1.4;  
+    margin-bottom: var(--mantine-spacing-xs);
+}
+.sidebarButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+    font-size: rem(14px);
+    font-weight: 500;
+    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-2));
+    background-color: var(--mantine-color-white);
+    border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+    border-radius: rem(4px);
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+    .sidebarButton:hover {
+        background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-7));
+        border-color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3));
+    }
+
+  
+  
+  
+  
+  

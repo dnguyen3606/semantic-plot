@@ -7,7 +7,13 @@ const publicRoutes: Routes = [
         path: `/home`,
         component: lazy(() => import('../../pages/Home')),
         authority: []
-    }
+    },
+    {
+        key: 'demo',
+        path: `/demo`,
+        component: lazy(() => import('../../pages/Demo')),
+        authority: []
+    },
 ]
 
 export default publicRoutes;

@@ -1,7 +1,7 @@
-import './styles/App.css'
+import './index.css'
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
-
+import { ComposedProvider } from './store/ComposedProvider'
 import { BrowserRouter } from 'react-router-dom'
 import { Layout } from './layout/Layout'
 
@@ -9,9 +9,11 @@ function App() {
 
   return (
     <MantineProvider>
-      <BrowserRouter>
-        <Layout/>
-      </BrowserRouter>
+      <ComposedProvider>
+        <BrowserRouter>
+          <Layout/>
+        </BrowserRouter>
+      </ComposedProvider>
     </MantineProvider>
   )
 }
