@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
+import numpy as np
 from .models import Story
 from pinecone import Pinecone
 from datetime import datetime
 import os
 from huggingface_hub import InferenceClient
-from huggingface_hub.errors import HfHubHTTPError
+from transformers import AutoTokenizer
 
 PINECONE=os.getenv('PINECONE')
 pc = Pinecone(api_key=PINECONE)
@@ -14,17 +15,42 @@ hf_client = InferenceClient(
     provider="nebius",
     api_key=os.getenv('HF_KEY')
 )
+tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-mistral-7b-instruct")
 
 def embed(text: str):
-    try:
-        embedding = hf_client.feature_extraction(
-            text=text,
-            model="intfloat/e5-mistral-7b-instruct",
-        )
-    except HfHubHTTPError as error:
-        return JsonResponse({"error": error}, status=503)
+    chunks = chunk_text(text)
+    embeddings = []
+    for chunk in chunks:
+        try:
+            embedding = hf_client.feature_extraction(
+                text=chunk,
+                model="intfloat/e5-mistral-7b-instruct",
+            )
+            embeddings.append(embedding)
+        except Exception as error:
+            return JsonResponse({"error": error}, status=503)
     
-    return embedding
+    if embeddings:
+        return np.mean(embeddings, axis=0).flatten().tolist()
+
+    return None
+
+def chunk_text(text: str, max_tokens=32000, overlap=0):
+    tokens = tokenizer.encode(text, add_special_tokens=True)
+    if len(tokens) <= max_tokens:
+        return [text]
+    
+    chunks = []
+    start = 0
+    while start < len(tokens):
+        end = min(start + max_tokens, len(tokens))
+        chunk_tokens = tokens[start:end]
+        chunk_text = tokenizer.decode(chunk_tokens, skip_special_tokens=True)
+        chunks.append(chunk_text)
+        if end == len(tokens):
+            break
+        start = end - overlap 
+    return chunks
 
 def storyid_to_pinecone(request, story_id: int):
     story = get_object_or_404(Story, id=story_id)
