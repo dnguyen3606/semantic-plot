@@ -3,8 +3,8 @@ import scrapy
 from scraper.items import StoryItem, ChapterItem
 
 # Example CLI 
-# scrapy crawl rrl_spider -a start_url="https://royalroad.com/fictions/popular"
-# scrapy crawl rrl_spider -a start_url="https://royalroad.com/fiction/some-story-slug"
+# scrapy crawl rrl_spider -a start_url="https://www.royalroad.com/fictions/best-rated"
+# scrapy crawl rrl_spider -a start_url="https://www.royalroad.com/fiction/some-story-slug"
 class RoyalRoadlSpiderSpider(scrapy.Spider):
     name = "rrl_spider"
     allowed_domains = ["royalroad.com"]
@@ -56,7 +56,7 @@ class RoyalRoadlSpiderSpider(scrapy.Spider):
         for fiction in response.css('div.fiction-list-item.row'):
             title = fiction.css('h2.fiction-title a::text').get().strip()
             slug = fiction.css('h2.fiction-title a::attr(href)').get().strip()
-            tags = fiction.css('.tags .fiction-tag::text').getall().strip()
+            tags = [tag.strip() for tag in fiction.css('.tags .fiction-tag::text').getall()]
             summary = " ".join(fiction.xpath('.//div[contains(@class, "margin-top-10")]//text()').getall()).strip()
 
             yield response.follow(slug, callback=self.parse_story_from_list, meta={
