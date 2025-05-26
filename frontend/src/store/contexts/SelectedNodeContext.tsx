@@ -1,26 +1,26 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { NodeProps } from '../../components/Node'
 
-interface NodeContextValue {
+interface SelectedNodeContextValue {
     selectedNode?: NodeProps;
     selectNode: (node: NodeProps) => void;
 }
 
-const NodeContext = createContext<NodeContextValue | undefined>(undefined);
+const SelectedNodeContext = createContext<SelectedNodeContextValue | undefined>(undefined);
 
-export function NodeProvider({ children }: { children: ReactNode }) {
+export function SelectedNodeProvider({ children }: { children: ReactNode }) {
     const [selectedNode, setSelectedNode] = useState<NodeProps>();
     return (
-        <NodeContext.Provider
+        <SelectedNodeContext.Provider
             value={{ selectedNode, selectNode: setSelectedNode }}
         >
             {children}
-        </NodeContext.Provider>
+        </SelectedNodeContext.Provider>
     );
 }
 
-export function useNodeContext(): NodeContextValue {
-    const context = useContext(NodeContext);
+export function useSelectedNodeContext(): SelectedNodeContextValue {
+    const context = useContext(SelectedNodeContext);
     if (!context) {
         throw new Error(`UseNodeContext must be used within NodeProvider`);
     }

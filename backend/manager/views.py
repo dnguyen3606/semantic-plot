@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import numpy as np
@@ -5,15 +6,15 @@ from .models import Story
 from pinecone import Pinecone
 from datetime import datetime
 import os
-from huggingface_hub import InferenceClient
+from openai import OpenAI
 from transformers import AutoTokenizer
 
 PINECONE=os.getenv('PINECONE')
 pc = Pinecone(api_key=PINECONE)
 index = pc.Index("story")
-hf_client = InferenceClient(
-    provider="nebius",
-    api_key=os.getenv('HF_KEY')
+client = OpenAI(
+    base_url="https://api.studio.nebius.com/v1/",
+    api_key=os.environ.get("NB_KEY")
 )
 tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-mistral-7b-instruct")
 
@@ -22,11 +23,11 @@ def embed(text: str):
     embeddings = []
     for chunk in chunks:
         try:
-            embedding = hf_client.feature_extraction(
-                text=chunk,
+            response = client.embeddings.create(
                 model="intfloat/e5-mistral-7b-instruct",
+                input=chunk,
             )
-            embeddings.append(embedding)
+            embeddings.append(json.loads(response.to_json())['data'][0]['embedding'])
         except Exception as error:
             return JsonResponse({"error": error}, status=503)
     

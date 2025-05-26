@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import { NodeProvider } from './contexts/NodeContext';
+import { SelectedNodeProvider } from './contexts/SelectedNodeContext';
 
 const providers = [
-    NodeProvider,
+    SelectedNodeProvider,
     //...
 ] as const;
 

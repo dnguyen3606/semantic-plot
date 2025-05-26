@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { TextInput, Textarea } from '@mantine/core';
 import styles from './RightSideBarContent.module.css'
-import { useNodeContext } from '../../../store/contexts/NodeContext';
+import { useSelectedNodeContext } from '../../../store/contexts/SelectedNodeContext';
 import { search } from '../../../utils/api';
 
 export default function DemoSideBarContent() {
-    const { selectedNode, selectNode } = useNodeContext();
+    const { selectedNode, selectNode } = useSelectedNodeContext();
     const [title, setTitle] = useState('No story bubble selected');
     const [content, setContent] = useState('No node, no summary.');
 

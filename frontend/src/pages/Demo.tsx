@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Node, { NodeProps, Position } from '../components/Node'
-import { useNodeContext } from '../store/contexts/NodeContext';
+import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
 
 const NODE_SIZE = 50
 
@@ -22,7 +22,7 @@ export default function Demo(){
         },
     ]);
 
-    const { selectedNode, selectNode } = useNodeContext();
+    const { selectedNode, selectNode } = useSelectedNodeContext();
 
     // const addNode = (node: NodeProps) => {
     //     setNodes((prev) => [...prev, node]);
