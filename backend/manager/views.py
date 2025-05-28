@@ -1,4 +1,5 @@
 import json
+import math
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import numpy as np
@@ -8,6 +9,7 @@ from datetime import datetime
 import os
 from openai import OpenAI
 from transformers import AutoTokenizer
+from sklearn.cluster import KMeans
 
 PINECONE=os.getenv('PINECONE')
 pc = Pinecone(api_key=PINECONE)
@@ -19,7 +21,8 @@ client = OpenAI(
 tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-mistral-7b-instruct")
 
 def embed(text: str):
-    chunks = chunk_text(text)
+    chunks = chunk_text(text, max_tokens=2048, overlap=512)
+    k = max(2, min(int(math.sqrt(len(chunks))), len(chunks)))
     embeddings = []
     for chunk in chunks:
         try:
@@ -27,14 +30,23 @@ def embed(text: str):
                 model="intfloat/e5-mistral-7b-instruct",
                 input=chunk,
             )
-            embeddings.append(json.loads(response.to_json())['data'][0]['embedding'])
+            embeddings.append(np.array(json.loads(response.to_json())['data'][0]['embedding'], dtype=float))
         except Exception as error:
             return JsonResponse({"error": error}, status=503)
     
-    if embeddings:
-        return np.mean(embeddings, axis=0).flatten().tolist()
+    X = np.vstack(embeddings)
 
-    return None
+    kmeans = KMeans(n_clusters=k, random_state=42).fit(X)
+    centroids = kmeans.cluster_centers_ 
+    labels = kmeans.labels_
+
+    counts = np.bincount(labels, minlength=k)
+    dominant_idx = np.argmax(counts)
+    dominant_centroid = centroids[dominant_idx]
+
+    dominant_centroid = dominant_centroid / np.linalg.norm(dominant_centroid)
+
+    return dominant_centroid.tolist()
 
 def chunk_text(text: str, max_tokens=32000, overlap=0):
     tokens = tokenizer.encode(text, add_special_tokens=True)
