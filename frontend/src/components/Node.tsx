@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, MouseEvent } from 'react';
+import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
 import styles from './Node.module.css'
 
 export interface NodeProps {
@@ -24,6 +25,8 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
     const draggingRef = useRef(false);
     const offsetRef = useRef<Position>({ x: 0, y: 0 });
     const initialMouseRef = useRef<Position>({ x: 0, y: 0 });  
+
+    const { selectedNode } = useSelectedNodeContext();
     
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         if (!onClick) return;
@@ -94,7 +97,7 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
         <div
             ref={nodeRef}
             onMouseDown={handleMouseDown}
-            className={styles.node}
+            className={`${styles.node} ${selectedNode?.id === id ? styles.selected : ''}`}
             style={{
                 position: 'absolute',
                 left: position.x,

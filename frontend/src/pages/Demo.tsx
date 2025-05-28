@@ -1,45 +1,50 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Node, { NodeProps, Position } from '../components/Node'
+import Connection from '../components/Connection';
+import { useNodesContext } from '../store/contexts/NodesContext';
 import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
+import { useNodeConnectionsContext } from '../store/contexts/NodeConnectionsContext';
+import classes from './Demo.module.css';
 
 const NODE_SIZE = 50
 
 export default function Demo(){
     const containerRef = useRef<HTMLDivElement>(null); 
 
-    const [nodes, setNodes] = useState<NodeProps[]>([
-        {
-          id: '1',
-          title: 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
-          content: 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.',
-          position: { x: 550, y: 250 },
-        },
-        {
-          id: '2',
-          title: 'Creative Conduit',
-          content: 'Channeling innovative ideas with precision.',
-          position: { x: 450, y: 250 },
-        },
-    ]);
+    const { nodes, addNode, setNodes } = useNodesContext();
+    const { selectNode } = useSelectedNodeContext();
+    const { connections } = useNodeConnectionsContext();
 
-    const { selectedNode, selectNode } = useSelectedNodeContext();
-
-    // const addNode = (node: NodeProps) => {
-    //     setNodes((prev) => [...prev, node]);
-    // }
+    const handleAdd = () => {
+        const newNode = {
+            id: crypto.randomUUID(),
+            title: 'New Node',
+            content: '',
+            position: { x: 0, y: 0 },
+        };
+        addNode(newNode);
+    };
 
     const handleClick = (node: NodeProps) => {
         selectNode(node);
     }
 
     useEffect(() => {
-        if (!selectedNode) return;
-        setNodes((prev) =>
-            prev.map((node) =>
-                node.id === selectedNode.id ? selectedNode : node
-            )
-        );
-    }, [selectedNode]);
+        if (nodes.length === 0) return;
+        const lastNode = nodes[nodes.length - 1];
+        handleMove(lastNode.id, lastNode.position);
+    }, [nodes.length]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            nodes.forEach((node) => {
+                handleMove(node.id, node.position);
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [nodes]);
 
     const handleDrag = (id: string, target: Position) => {
         moveNode(id, target);
@@ -53,7 +58,7 @@ export default function Demo(){
     const moveNode = (id: string, target: Position) => {
         setNodes(prev =>
             prev.map(node =>
-                node.id === id ? { ...node, position: { ...target } } : node
+                node.id === id ? { ...node, position: target } : node
             )
         ); 
     }
@@ -130,9 +135,27 @@ export default function Demo(){
 
     return (
         <div ref={containerRef} style={{height: '100vh', width: '100%'}}>
+            {connections.map(({from, to}) => {
+                const fromPosition = nodes.find(node => node.id === from)?.position;
+                const toPosition = nodes.find(node => node.id === to)?.position;
+                if (!fromPosition || !toPosition) return null;
+                return <Connection 
+                    key={`${from}-${to}-${fromPosition.x},${fromPosition.y}-${toPosition.x},${toPosition.y}`} 
+                    from={fromPosition} 
+                    to={toPosition} 
+                />;
+            })}
+
             {nodes.map((node) => (
                 <Node key={node.id} {...node} onClick={handleClick} onDrag={handleDrag} onDrop={handleDrop}/>
             ))}
+            
+            <button
+                onClick={handleAdd}
+                className={classes.addButton}
+            >
+                +
+            </button>
         </div>
     )
   }

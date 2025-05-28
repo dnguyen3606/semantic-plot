@@ -8,5 +8,13 @@ export default defineConfig({
     alias: {
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       },
+  },
+  optimizeDeps: {
+    exclude: ['@tabler/icons-react'],
+  },
+  build: {
+    commonjsOptions: {
+      exclude: ['@tabler/icons-react']
+    }
   }
 })

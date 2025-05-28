@@ -83,7 +83,7 @@ def upsert(story, embedding):
 def query(request):
     content = request.body.decode('utf-8')
     content_embedding = embed(content)
-    content_embedding = content_embedding.tolist()
+    content_embedding = content_embedding
 
     response = index.query(vector=content_embedding, top_k=5, include_metadata=True)
     matches = [

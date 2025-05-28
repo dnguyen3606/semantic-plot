@@ -22,7 +22,7 @@ export function SelectedNodeProvider({ children }: { children: ReactNode }) {
 export function useSelectedNodeContext(): SelectedNodeContextValue {
     const context = useContext(SelectedNodeContext);
     if (!context) {
-        throw new Error(`UseNodeContext must be used within NodeProvider`);
+        throw new Error(`useSelectedNodeContext must be used within SelectedNodeProvider`);
     }
     return context
 }
