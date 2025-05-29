@@ -7,9 +7,9 @@ import { useNodeConnectionsContext } from '../../../store/contexts/NodeConnectio
 import { search } from '../../../utils/api';
 
 export default function DemoSideBarContent() {
-    const { addNode, updateNode } = useNodesContext();
+    const { addNode, updateNode, getNode } = useNodesContext();
     const { selectedNode } = useSelectedNodeContext();
-    const { addConnection } = useNodeConnectionsContext();
+    const { addConnection, getConnection } = useNodeConnectionsContext();
     const [title, setTitle] = useState('No story bubble selected');
     const [content, setContent] = useState('No node, no summary.');
 
@@ -37,13 +37,17 @@ export default function DemoSideBarContent() {
 
             stories.forEach(story => {
                 const newNode = {
-                    id: crypto.randomUUID(),
+                    id: story.id,
                     title: story.title,
                     content: story.summary,
                     position: { x: selectedNode.position.x + Math.random() * 200 - 100, y: selectedNode.position.y + Math.random() * 200 - 100 },
                 };
-                addNode(newNode);
-                addConnection({from: selectedNode.id, to: newNode.id});
+                if (!getNode(story.id)) {
+                    addNode(newNode);
+                }
+                if (!getConnection(selectedNode.id, story.id)) {
+                    addConnection({from: selectedNode.id, to: newNode.id, score: story.score });
+                }
             })
         } catch (error) {
             console.error("Query failed: ", error); // add error toast later
@@ -79,7 +83,7 @@ export default function DemoSideBarContent() {
             <div className={styles.sidebarMain}>
                 <div className={styles.sidebarSection}>
                     <div className={styles.sidebarHeader}>
-                        <TextInput value={title} onChange={(event) => setTitle(event.currentTarget.value)}/>
+                        <TextInput value={title} onChange={(event) => setTitle(event.currentTarget.value)} placeholder='Enter title...'/>
                     </div>
                 </div>
                 <div className={styles.sidebarSection}>
@@ -87,7 +91,7 @@ export default function DemoSideBarContent() {
                         Summary:
                     </div>
                     <div className={styles.sidebarText}>
-                        <Textarea value={content} onChange={(event) => setContent(event.currentTarget.value)}/>
+                        <Textarea value={content} onChange={(event) => setContent(event.currentTarget.value)} placeholder='Enter content...'/>
                     </div>
                 </div>
                 <div style={{flexDirection: 'row'}}>

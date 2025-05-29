@@ -7,11 +7,27 @@
     stroke-width: 2px;
     pointer-events: none;
     opacity: 0;
-    animation: fadeIn 1.5s ease forwards;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 500ms;
 }
 
 @keyframes fadeIn {
     to {
         opacity: 1;
+    }
+}
+
+.selectedConnection {
+    stroke: #1590c9;
+    animation: fadeIn 0.5s ease forwards, pulse 1s infinite; 
+    animation-delay: 500ms;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        stroke-width: 2px;
+    }
+    50% {
+        stroke-width: var(--pulseWidth);
     }
 }

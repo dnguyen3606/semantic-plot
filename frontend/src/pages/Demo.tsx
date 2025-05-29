@@ -11,14 +11,14 @@ const NODE_SIZE = 50
 export default function Demo(){
     const containerRef = useRef<HTMLDivElement>(null); 
 
-    const { nodes, addNode, setNodes } = useNodesContext();
+    const { nodes, addNode, setNodes, getNode } = useNodesContext();
     const { selectNode } = useSelectedNodeContext();
     const { connections } = useNodeConnectionsContext();
 
     const handleAdd = () => {
         const newNode = {
             id: crypto.randomUUID(),
-            title: 'New Node',
+            title: '',
             content: '',
             position: { x: 0, y: 0 },
         };
@@ -135,14 +135,12 @@ export default function Demo(){
 
     return (
         <div ref={containerRef} style={{height: '100vh', width: '100%'}}>
-            {connections.map(({from, to}) => {
-                const fromPosition = nodes.find(node => node.id === from)?.position;
-                const toPosition = nodes.find(node => node.id === to)?.position;
-                if (!fromPosition || !toPosition) return null;
+            {connections.map(({from, to, score}) => {
                 return <Connection 
-                    key={`${from}-${to}-${fromPosition.x},${fromPosition.y}-${toPosition.x},${toPosition.y}`} 
-                    from={fromPosition} 
-                    to={toPosition} 
+                    key={`${from}-${to}-${getNode(from)?.position.x}-${getNode(from)?.position.y}-${getNode(to)?.position.x}-${getNode(to)?.position.y}`} 
+                    from={from} 
+                    to={to}
+                    score={score}
                 />;
             })}
 

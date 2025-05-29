@@ -9,6 +9,9 @@
     justify-content: center;
     cursor: pointer;
     transition: transform 0.2s ease;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
 }
 .node:hover {
   transform: scale(1.05);
@@ -17,6 +20,6 @@
 
 .selected {
   background-color: #1590c9;
-  box-shadow: 0 0 8px #62c1ec;
+  box-shadow: 0 0 8px #1590c9;
 }
   

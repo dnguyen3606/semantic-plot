@@ -3,12 +3,22 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import navigationConfig from '../../configs/navigation.config';
 import { LinksGroup } from '../LinksGroup';
 import classes from './LeftNavBar.module.css';
-import {Box, Group} from '@mantine/core';
+import {ActionIcon, Box, Group} from '@mantine/core';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 export default function LeftSideBar() {
+  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [active, setActive] = useState('');
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 250); 
+
+    return () => clearTimeout(timeout);
+  }, [collapsed]);
 
   useEffect(() => {
     const currentPath = location.pathname.split('/')[1];
@@ -59,14 +69,30 @@ export default function LeftSideBar() {
     }
   });
 
-  return (
-    <nav className={classes.navbar}>
-      <div className={classes.navbarMain}>
-        <Group className={classes.header} justify="space-between">
-          Dwindled.dev
-        </Group>
-        {links}
-      </div>
-    </nav>
-  );
+return (
+  <div className={classes.sidebarContainer} style={{ width: collapsed ? '60px' : '300px' }}>
+    <div className={classes.collapseButtonWrapper}>
+      <ActionIcon
+        variant='subtle'
+        className={classes.collapseButton}
+        onClick={() => setCollapsed(!collapsed)}
+        aria-label="Toggle Sidebar"
+      >
+        {collapsed ? <IconChevronRight size={32} /> : <IconChevronLeft size={32} />}
+      </ActionIcon>
+    </div>
+
+    {!collapsed && (
+      <nav className={classes.navbar}>
+        <div className={classes.navbarMain}>
+          <Group className={classes.header} justify="space-between">
+            Dwindled.dev
+          </Group>
+          {links}
+        </div>
+      </nav>
+    )}
+  </div>
+);
+
 }

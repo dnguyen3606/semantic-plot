@@ -33,6 +33,11 @@ def embed(text: str):
             embeddings.append(np.array(json.loads(response.to_json())['data'][0]['embedding'], dtype=float))
         except Exception as error:
             return JsonResponse({"error": error}, status=503)
+        
+    if len(embeddings) == 1:
+        single_embedding = embeddings[0]
+        single_embedding = single_embedding / np.linalg.norm(single_embedding)
+        return single_embedding.tolist()
     
     X = np.vstack(embeddings)
 

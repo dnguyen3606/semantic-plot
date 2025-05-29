@@ -7,6 +7,7 @@ interface NodesContextValue {
     addNode: (node: NodeProps) => void;
     removeNode: (id: string) => void;
     updateNode: (id: string, updates: Partial<NodeProps>) => void;
+    getNode: (id: string) => NodeProps | undefined;
 }
 
 const NodesContext = createContext<NodesContextValue | undefined>(undefined);
@@ -14,7 +15,6 @@ const NodesContext = createContext<NodesContextValue | undefined>(undefined);
 export function NodesProvider({ children }: { children: ReactNode }) {
     const [nodes, setNodes] = useState<NodeProps[]>([]);
 
-    
     const addNode = (node: NodeProps) => {
         setNodes(prev => [...prev, node]);
     };
@@ -22,6 +22,9 @@ export function NodesProvider({ children }: { children: ReactNode }) {
     const removeNode = (id: string) => {
         setNodes(prev => prev.filter(node => node.id !== id));
     };
+
+    const getNode = (id: string): NodeProps | undefined =>
+        nodes.find(node => node.id === id);
 
     const updateNode = (id: string, updates: Partial<NodeProps>) => {
         setNodes(prev =>
@@ -33,7 +36,7 @@ export function NodesProvider({ children }: { children: ReactNode }) {
 
     return (
         <NodesContext.Provider
-            value={{ nodes, setNodes, addNode, removeNode, updateNode }}
+            value={{ nodes, setNodes, addNode, removeNode, updateNode, getNode }}
         >
             {children}
         </NodesContext.Provider>

@@ -103,8 +103,10 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
                 left: position.x,
                 top: position.y,
                 transition: draggingRef.current ? 'none' : 'left 0.5s ease, top 0.5s ease'
-            }}    
-        />
+            }}
+        >
+            {title.split(/\s+/).map(word => word[0]?.toUpperCase()).slice(0, 3).join('')}
+        </div>
     );
 };
 

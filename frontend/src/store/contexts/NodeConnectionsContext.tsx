@@ -3,12 +3,14 @@ import { createContext, useContext, useState, ReactNode } from "react";
 type Connection = {
     from: string;
     to: string;
+    score?: number;
 }
 
 interface NodeConnectionsContextValue {
     connections: Connection[];
     addConnection: (connection: Connection) => void;
     removeConnection: (connection: Connection) => void;
+    getConnection: (from: string, to: string) => Connection | undefined;
 }
 
 const NodeConnectionsContext = createContext<NodeConnectionsContextValue | undefined>(undefined);
@@ -22,9 +24,15 @@ export function NodeConnectionsProvider({ children }: { children: ReactNode }) {
     const removeConnection = (c: Connection) =>
         setConnections(cs => cs.filter(x => !(x.from===c.from && x.to===c.to)));
 
+    const getConnection = (id1: string, id2: string): Connection | undefined =>
+        connections.find(connection =>
+            (connection.from === id1 && connection.to === id2) ||
+            (connection.from === id2 && connection.to === id1)
+    );
+
     return (
         <NodeConnectionsContext.Provider
-            value={{ connections, addConnection, removeConnection }}
+            value={{ connections, addConnection, removeConnection, getConnection }}
         >
             {children}
         </NodeConnectionsContext.Provider>
