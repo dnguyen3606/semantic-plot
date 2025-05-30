@@ -27,6 +27,14 @@ export default function Connection({ from, to, score=0.8 }: ConnectionProps) {
         (selectedNode.id === fromNode.id || selectedNode.id === toNode.id)
     );
 
+    const x1 = fromNode.position.x + 25;
+    const y1 = fromNode.position.y + 25;
+    const x2 = toNode.position.x   + 25;
+    const y2 = toNode.position.y   + 25;
+
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+
     const baseline = 0.7;
     const normalizedScore = score > baseline ? (score - baseline) / (1 - baseline) : 0;
     const baseWidth = 2;
@@ -41,13 +49,23 @@ export default function Connection({ from, to, score=0.8 }: ConnectionProps) {
     return (
         <svg className={classes.layer} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
             <line
-            x1={getNode(from)!.position.x + 25}
-            y1={getNode(from)!.position.y + 25}
-            x2={getNode(to)!.position.x + 25}
-            y2={getNode(to)!.position.y + 25}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
             className={lineClass}
             style={style}
             />
+            {selected && (
+                <text
+                    key={`${mx}-${my}`}
+                    x={mx}
+                    y={my}
+                    className={classes.scoreLabel}
+                >
+                {score.toFixed(2)}
+                </text>
+            )}
         </svg>
     );
 }

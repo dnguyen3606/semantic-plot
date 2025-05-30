@@ -4,6 +4,7 @@ import Connection from '../components/Connection';
 import { useNodesContext } from '../store/contexts/NodesContext';
 import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
 import { useNodeConnectionsContext } from '../store/contexts/NodeConnectionsContext';
+import { IconPlus } from '@tabler/icons-react';
 import classes from './Demo.module.css';
 
 const NODE_SIZE = 50
@@ -30,9 +31,7 @@ export default function Demo(){
     }
 
     useEffect(() => {
-        if (nodes.length === 0) return;
-        const lastNode = nodes[nodes.length - 1];
-        handleMove(lastNode.id, lastNode.position);
+        nodes.forEach(n => handleMove(n.id, n.position));
     }, [nodes.length]);
 
     useEffect(() => {
@@ -134,7 +133,7 @@ export default function Demo(){
     // end helpers
 
     return (
-        <div ref={containerRef} style={{height: '100vh', width: '100%'}}>
+        <div ref={containerRef} className={classes.container}>
             {connections.map(({from, to, score}) => {
                 return <Connection 
                     key={`${from}-${to}-${getNode(from)?.position.x}-${getNode(from)?.position.y}-${getNode(to)?.position.x}-${getNode(to)?.position.y}`} 
@@ -152,7 +151,7 @@ export default function Demo(){
                 onClick={handleAdd}
                 className={classes.addButton}
             >
-                +
+                <IconPlus size={24} strokeWidth={2} />
             </button>
         </div>
     )

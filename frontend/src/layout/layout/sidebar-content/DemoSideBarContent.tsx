@@ -40,7 +40,10 @@ export default function DemoSideBarContent() {
                     id: story.id,
                     title: story.title,
                     content: story.summary,
-                    position: { x: selectedNode.position.x + Math.random() * 200 - 100, y: selectedNode.position.y + Math.random() * 200 - 100 },
+                    position: { 
+                        x: getNode(selectedNode.id)!.position.x + Math.random() * 200 - 100, 
+                        y: getNode(selectedNode.id)!.position.y + Math.random() * 200 - 100 
+                    },
                 };
                 if (!getNode(story.id)) {
                     addNode(newNode);
@@ -91,7 +94,14 @@ export default function DemoSideBarContent() {
                         Summary:
                     </div>
                     <div className={styles.sidebarText}>
-                        <Textarea value={content} onChange={(event) => setContent(event.currentTarget.value)} placeholder='Enter content...'/>
+                        <Textarea 
+                            value={content} 
+                            onChange={(event) => setContent(event.currentTarget.value)} 
+                            placeholder='Enter content...' 
+                            autosize
+                            minRows={4}
+                            maxRows={30}
+                        />
                     </div>
                 </div>
                 <div style={{flexDirection: 'row'}}>

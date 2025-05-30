@@ -31,3 +31,15 @@
         stroke-width: var(--pulseWidth);
     }
 }
+
+.scoreLabel {
+    font-size: 12px;
+    font-weight: bold;
+    fill: #000;             
+    pointer-events: none;
+    text-anchor: middle;      
+    user-select: none;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 500ms;
+    opacity: 0;
+}
