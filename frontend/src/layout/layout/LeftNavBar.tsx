@@ -33,14 +33,18 @@ export default function LeftSideBar() {
         label: i.title,
         link: i.path,
         authority: i.authority,
+        icon: i.icon,
+        iconActive: i.iconActive,
       }));
       const isAnyLinkActive = links.some((link) => location.pathname.includes(link.link));
 
       return (
-        <Box ml={10} my={10} key={index}>
+        <Box my={10} key={index}>
         <LinksGroup
           initiallyOpened={isAnyLinkActive}
+          path={item.path}
           icon={item.icon}
+          iconActive={item.iconActive}
           label={item.title}
           links={links}
         />
@@ -69,30 +73,30 @@ export default function LeftSideBar() {
     }
   });
 
-return (
-  <div className={classes.sidebarContainer} style={{ width: collapsed ? '60px' : '300px' }}>
-    <div className={classes.collapseButtonWrapper}>
-      <ActionIcon
-        variant='subtle'
-        className={classes.collapseButton}
-        onClick={() => setCollapsed(!collapsed)}
-        aria-label="Toggle Sidebar"
-      >
-        {collapsed ? <IconChevronRight size={32} /> : <IconChevronLeft size={32} />}
-      </ActionIcon>
-    </div>
+  return (
+    <div className={classes.sidebarContainer} style={{ width: collapsed ? 'clamp(1rem, 4vw, 6rem)' : 'clamp(4rem, 20vw, 18rem)' }}>
+      <div className={classes.collapseButtonWrapper}>
+        <ActionIcon
+          variant='subtle'
+          className={classes.collapseButton}
+          onClick={() => setCollapsed(!collapsed)}
+          aria-label="Toggle Sidebar"
+        >
+          {collapsed ? <IconChevronRight size={32} /> : <IconChevronLeft size={32} />}
+        </ActionIcon>
+      </div>
 
-    {!collapsed && (
-      <nav className={classes.navbar}>
-        <div className={classes.navbarMain}>
-          <Group className={classes.header} justify="space-between">
-            Dwindled.dev
-          </Group>
-          {links}
-        </div>
-      </nav>
-    )}
-  </div>
-);
+      {!collapsed && (
+        <nav className={classes.navbar}>
+          <div className={classes.navbarMain}>
+            <Group className={classes.header} justify="space-between">
+              Dwindled.dev
+            </Group>
+            {links}
+          </div>
+        </nav>
+      )}
+    </div>
+  );
 
 }

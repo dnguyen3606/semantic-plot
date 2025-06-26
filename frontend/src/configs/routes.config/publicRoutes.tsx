@@ -14,6 +14,12 @@ const publicRoutes: Routes = [
         component: lazy(() => import('../../pages/Demo')),
         authority: []
     },
+    {
+        key: 'semantic-plot',
+        path: `/demo/semantic-plot`,
+        component: lazy(() => import('../../pages/SemanticPlot')),
+        authority: []
+    },
 ]
 
 export default publicRoutes;

@@ -16,4 +16,6 @@ export interface NavigationTree {
     authority: string[]
     title: string
     translateKey: string
+    icon: any
+    iconActive: any
   }

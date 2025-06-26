@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { TextInput, Textarea } from '@mantine/core';
-import styles from './RightSideBarContent.module.css'
+import classes from './RightSideBarContent.module.css'
 import { useNodesContext } from '../../../store/contexts/NodesContext';
 import { useSelectedNodeContext } from '../../../store/contexts/SelectedNodeContext';
 import { useNodeConnectionsContext } from '../../../store/contexts/NodeConnectionsContext';
 import { search } from '../../../utils/api';
+import { ActionIcon, TextInput, Textarea } from '@mantine/core';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 export default function DemoSideBarContent() {
+    const [collapsed, setCollapsed] = useState(false);
     const { addNode, updateNode, getNode } = useNodesContext();
     const { selectedNode } = useSelectedNodeContext();
     const { addConnection, getConnection } = useNodeConnectionsContext();
@@ -59,22 +61,22 @@ export default function DemoSideBarContent() {
 
     // TODO: add WRITEABILITY check for nodeProps, alter between these two.
     // return (
-    //     <div className={styles.sidebar}>
-    //         <div className={styles.sidebarMain}>
-    //             <div className={styles.sidebarSection}>
-    //                 <div className={styles.sidebarHeader}>
+    //     <div className={classes.sidebar}>
+    //         <div className={classes.sidebarMain}>
+    //             <div className={classes.sidebarSection}>
+    //                 <div className={classes.sidebarHeader}>
     //                     {title}
     //                 </div>
     //             </div>
-    //             <div className={styles.sidebarSection}>
-    //                 <div className={styles.sidebarHeader}>
+    //             <div className={classes.sidebarSection}>
+    //                 <div className={classes.sidebarHeader}>
     //                     Summary:
     //                 </div>
-    //                 <div className={styles.sidebarText}>
+    //                 <div className={classes.sidebarText}>
     //                     {content}
     //                 </div>
     //             </div>
-    //             <button className={styles.sidebarButton} onClick={handleSave}>
+    //             <button className={classes.sidebarButton} onClick={handleSave}>
     //                 Save
     //             </button>
     //         </div>
@@ -82,37 +84,50 @@ export default function DemoSideBarContent() {
     // )
 
     return (
-        <div className={styles.sidebar}>
-            <div className={styles.sidebarMain}>
-                <div className={styles.sidebarSection}>
-                    <div className={styles.sidebarHeader}>
-                        <TextInput value={title} onChange={(event) => setTitle(event.currentTarget.value)} placeholder='Enter title...'/>
-                    </div>
-                </div>
-                <div className={styles.sidebarSection}>
-                    <div className={styles.sidebarHeader}>
-                        Summary:
-                    </div>
-                    <div className={styles.sidebarText}>
-                        <Textarea 
-                            value={content} 
-                            onChange={(event) => setContent(event.currentTarget.value)} 
-                            placeholder='Enter content...' 
-                            autosize
-                            minRows={4}
-                            maxRows={30}
-                        />
-                    </div>
-                </div>
-                <div style={{flexDirection: 'row'}}>
-                    <button className={styles.sidebarButton} onClick={handleSave}>
-                        Save
-                    </button>
-                    <button className={styles.sidebarButton} onClick={semanticSearch}>
-                        Query
-                    </button>
-                </div>
+        <div className={classes.sidebar} style={{ width: collapsed ? 'clamp(1rem, 4vw, 6rem)' : 'clamp(4rem, 20vw, 18rem)' }} >
+            <div className={classes.collapseButtonWrapper}>
+                <ActionIcon
+                variant='subtle'
+                className={classes.collapseButton}
+                onClick={() => setCollapsed(!collapsed)}
+                aria-label="Toggle Sidebar"
+                >
+                {collapsed ? <IconChevronLeft size={32} /> : <IconChevronRight size={32} />}
+                </ActionIcon>
             </div>
+
+            {!collapsed && (
+                <div className={classes.sidebarMain}>
+                    <div className={classes.sidebarSection}>
+                        <div className={classes.sidebarHeader}>
+                            <TextInput value={title} onChange={(event) => setTitle(event.currentTarget.value)} placeholder='Enter title...'/>
+                        </div>
+                    </div>
+                    <div className={classes.sidebarSection}>
+                        <div className={classes.sidebarHeader}>
+                            Summary:
+                        </div>
+                        <div className={classes.sidebarText}>
+                            <Textarea 
+                                value={content} 
+                                onChange={(event) => setContent(event.currentTarget.value)} 
+                                placeholder='Enter content...' 
+                                autosize
+                                minRows={4}
+                                maxRows={30}
+                            />
+                        </div>
+                    </div>
+                    <div style={{flexDirection: 'row'}}>
+                        <button className={classes.sidebarButton} onClick={handleSave}>
+                            Save
+                        </button>
+                        <button className={classes.sidebarButton} onClick={semanticSearch}>
+                            Query
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

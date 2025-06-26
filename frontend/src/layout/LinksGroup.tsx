@@ -1,26 +1,32 @@
 import {useEffect, useState} from 'react';
-import {Group, Box, Collapse, ThemeIcon, Text, UnstyledButton, rem} from '@mantine/core';
+import {Group, Collapse, ActionIcon} from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
-import classes from './layout/LeftNavBar.module.css';
-import {useNavigate} from "react-router-dom";
+import classes from './LinksGroup.module.css';
+import {useNavigate, useLocation} from "react-router-dom";
 
 interface LinksGroupProps {
   icon: React.FC<any>;
+  iconActive: React.FC<any>;
   label: string;
   initiallyOpened?: boolean;
-  links?: { label: string; link: string }[];
+  path: string,
+  links?: { label: string; link: string; authority?: string[]; icon: any; iconActive: any; }[];
 }
 
-export function LinksGroup({ //links stack?
+export function LinksGroup({ 
                              icon: Icon,
+                             iconActive: IconActive,
                              label,
                              initiallyOpened,
+                             path,
                              links
                            }: LinksGroupProps) {
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const navigate = useNavigate();
   const [active, setActive] = useState('');
+  const location = useLocation();
+  const isParentActive = location.pathname === path;
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -28,51 +34,63 @@ export function LinksGroup({ //links stack?
   }, [location.pathname]);
 
   const items = (hasLinks ? links : []).map((link) => {
-    return (<Text<'a'>
-      component="a"
-      data-active={link.link === active ? 'true' : undefined}
-      className={classes.link}
-      href={link.link}
-      key={link.label}
-      onClick={(event) => {
-        navigate(link.link);
-        event.preventDefault()
-      }}
-    >
-      {link.label}
-    </Text>)
+    const IconComponent = link.link === active ? link.iconActive : link.icon;
+
+    return (
+      <Group
+        data-active={link.link === active ? 'true' : undefined}
+        className={classes.child}
+        key={link.label}
+        onClick={(event) => {
+          navigate(link.link);
+          event.preventDefault()
+        }}
+      >
+        <IconComponent className={classes.linkIcon} stroke={1.5} />
+        <span>{link.label}</span>
+      </Group>
+    )
   });
 
   return (
     <div style={{marginBottom:'0.8rem'}}>
-      <UnstyledButton onClick={() => setOpened((o) => !o)} className={classes.control}>
-        <Group justify="space-between" gap={5}>
-          <Box style={{
-            display: 'flex',
-            alignItems: 'center'
-          }}>
-            <ThemeIcon variant="light" size={30}>
-              <Icon style={{
-                width: rem(18),
-                height: rem(18)
-              }}/>
-            </ThemeIcon>
-            <Box ml="md">{label}</Box>
-          </Box>
-          {hasLinks && (
+      <Group
+        justify="space-between"
+        className={classes.parent}
+        data-active={isParentActive ? 'true' : undefined}
+        onClick={(event) => {
+          event.preventDefault();
+          navigate(path);
+        }}
+      >
+        <Group gap={0}>
+          {isParentActive ? 
+            <IconActive className={classes.linkIcon} stroke={1.5} /> : 
+            <Icon className={classes.linkIcon} stroke={1.5} />
+          }
+          <span>{label}</span>
+        </Group>
+        {hasLinks && (
+          <ActionIcon
+            size="lg"
+            variant="light"
+            onClick={(event) => {
+              event.stopPropagation();      
+              setOpened((o) => !o);
+            }}
+            color={isParentActive ? 'blue' : 'gray'}
+          >
             <IconChevronRight
-              className={classes.chevron}
               stroke={1.5}
               style={{
-                width: rem(16),
-                height: rem(16),
-                transform: opened ? 'rotate(-90deg)' : 'none',
+                transform: opened ? 'rotate(-90deg)' : undefined,
+                transition: 'transform 150ms ease',
               }}
             />
-          )}
-        </Group>
-      </UnstyledButton>
-      {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
+          </ActionIcon>
+        )}
+      </Group>
+      {hasLinks && <Collapse in={opened}>{items}</Collapse>}
     </div>
   );
 }

@@ -7,12 +7,12 @@ export default function RightSideBar() {
     const [active, setActive] = useState('');
 
     useEffect(() => {
-        const currentPath = location.pathname.split('/')[1];
+        const currentPath = location.pathname;
         setActive(currentPath);
       }, [location.pathname]);
 
     const renderContent = () => {
-        if (active === 'demo') {
+        if (active.includes('semantic-plot')) {
             return <DemoSideBarContent/>
         }
 

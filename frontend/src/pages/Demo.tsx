@@ -1,158 +1,46 @@
-import { useEffect, useRef } from 'react'
-import Node, { NodeProps, Position } from '../components/Node'
-import Connection from '../components/Connection';
-import { useNodesContext } from '../store/contexts/NodesContext';
-import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
-import { useNodeConnectionsContext } from '../store/contexts/NodeConnectionsContext';
-import { IconPlus } from '@tabler/icons-react';
-import classes from './Demo.module.css';
-
-const NODE_SIZE = 50
+import { Container, Divider, List, Stack, Title, Text, Anchor } from "@mantine/core";
+import { IconChartBubble } from "@tabler/icons-react";
 
 export default function Demo(){
-    const containerRef = useRef<HTMLDivElement>(null); 
-
-    const { nodes, addNode, setNodes, getNode } = useNodesContext();
-    const { selectNode } = useSelectedNodeContext();
-    const { connections } = useNodeConnectionsContext();
-
-    const handleAdd = () => {
-        const newNode = {
-            id: crypto.randomUUID(),
-            title: '',
-            content: '',
-            position: { x: 0, y: 0 },
-        };
-        addNode(newNode);
-    };
-
-    const handleClick = (node: NodeProps) => {
-        selectNode(node);
-    }
-
-    useEffect(() => {
-        nodes.forEach(n => handleMove(n.id, n.position));
-    }, [nodes.length]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            nodes.forEach((node) => {
-                handleMove(node.id, node.position);
-            });
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [nodes]);
-
-    const handleDrag = (id: string, target: Position) => {
-        moveNode(id, target);
-    }
-
-    const handleDrop = (id: string, target: Position) => {
-        handleMove(id, target);
-    }
-
-    // helper function
-    const moveNode = (id: string, target: Position) => {
-        setNodes(prev =>
-            prev.map(node =>
-                node.id === id ? { ...node, position: target } : node
-            )
-        ); 
-    }
-
-    const handleMove = (id: string, target: Position) => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-
-        const node = nodes.find(n => n.id === id);
-        if (!node) return;
-
-        // 1. out of bounds -> redirect to center
-        const outOfBounds = 
-            target.x < rect.left ||
-            target.y < rect.top ||
-            target.x + NODE_SIZE > rect.right ||
-            target.y + NODE_SIZE > rect.bottom;
-
-        if (outOfBounds) {
-            const center: Position = {
-                x: rect.right / 2 + (Math.random() * (5 * NODE_SIZE) - (5 * NODE_SIZE) / 2),
-                y: rect.bottom / 2 + (Math.random() * (5 * NODE_SIZE) - (5 * NODE_SIZE) / 2),
-            };                  
-            target = center;
-            moveNode(id, target);
-        }
-
-        // 2. node collision -> redirect away from collision
-        let collisionFound = false;
-        let tries = 0;
-        do {
-            collisionFound = false;
-            for (const other_node of nodes) {
-                if (other_node.id === id) continue;
-                if (collides(other_node.position, target)) {
-                    target = resolveCollision(target, other_node.position)
-                    collisionFound = true;
-                    break;
-                }
-            }
-            tries++;
-        } while (collisionFound && tries < 20)
-        moveNode(id, target);
-    }
-
-    const collides = (posA: Position, posB: Position): boolean => {
-        return (
-            posA.x < posB.x + NODE_SIZE &&
-            posA.x + NODE_SIZE > posB.x &&
-            posA.y < posB.y + NODE_SIZE &&
-            posA.y + NODE_SIZE > posB.y
-        );
-    };
-
-    function resolveCollision(posA: Position, posB: Position): Position {
-        const centerA = { x: posA.x + NODE_SIZE / 2, y: posA.y + NODE_SIZE / 2 };
-        const centerB = { x: posB.x + NODE_SIZE / 2, y: posB.y + NODE_SIZE / 2 };
-      
-        const dx = centerA.x - centerB.x;
-        const dy = centerA.y - centerB.y;
-
-        const overlapX = NODE_SIZE - Math.abs(dx);
-        const overlapY = NODE_SIZE - Math.abs(dy);
-      
-        if (overlapX < overlapY) {
-            const offsetX = overlapX * (dx < 0 ? -1 : 1);
-            return { x: posA.x + offsetX, y: posA.y };
-        } else {
-            const offsetY = overlapY * (dy < 0 ? -1 : 1);
-            return { x: posA.x, y: posA.y + offsetY };
-        }
-    }
-    // end helpers
-
     return (
-        <div ref={containerRef} className={classes.container}>
-            {connections.map(({from, to, score}) => {
-                return <Connection 
-                    key={`${from}-${to}-${getNode(from)?.position.x}-${getNode(from)?.position.y}-${getNode(to)?.position.x}-${getNode(to)?.position.y}`} 
-                    from={from} 
-                    to={to}
-                    score={score}
-                />;
-            })}
+        <Container>
+            <Stack gap="xl" align="center">
+                <Title>
+                    Project Demonstrations
+                </Title>
 
-            {nodes.map((node) => (
-                <Node key={node.id} {...node} onClick={handleClick} onDrag={handleDrag} onDrop={handleDrop}/>
-            ))}
-            
-            <button
-                onClick={handleAdd}
-                className={classes.addButton}
-            >
-                <IconPlus size={24} strokeWidth={2} />
-            </button>
-        </div>
+                <Divider w="100%" size="sm" />
+
+                <Container>
+                    <Stack gap="md" align="center">
+                        Welcome to the main projects page! I'll explain some things about the projects in this page.
+
+                        <Divider/>
+
+                        <List spacing="md" size="sm" withPadding center={false}>
+                            <List.Item icon={<IconChartBubble/>}>
+                                <Text component="span" fw={500}>
+                                    Semantic Plot
+                                </Text>
+                                <Text>
+                                    Click blue `+` button to generate a blue node. Select this node to access the contents inside,
+                                    and add whatever you would like. Hit save, then query to search for entire stories that are similar your prompt
+                                </Text>
+                                <Text>
+                                    Feel free to drag bubbles around, they'll be contained within the main view and will update even if your window changes.
+                                    Semantic search is done via embedding models to vectorize large texts, then scalably searched for the most similar chunk
+                                    of text to your prompt. Available texts are scraped from {' '}
+                                    <Anchor href="https://www.royalroad.com/home" target="_blank" rel="noopener noreferrer">RoyalRoad</Anchor>
+                                    's best rated stories list.
+                                </Text>
+                                <Text>
+                                    This does not require any computation from your machine. All inference is done remotely.
+                                </Text>
+                            </List.Item>
+                        </List>
+                    </Stack>
+                </Container>
+            </Stack>
+        </Container>
     )
-  }
+}

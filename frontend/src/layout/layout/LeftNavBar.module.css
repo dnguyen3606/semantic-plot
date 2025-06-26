@@ -1,6 +1,5 @@
 .navbar {
     height: 100vh;
-    width: rem(300px);
     padding: var(--mantine-spacing-md);
     display: flex;
     flex-direction: column;
@@ -101,13 +100,11 @@
     justify-content: center;
     transition: background-color 150ms ease, color 150ms ease;
 }
-
-.collapseButton:hover {
-    background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-}
-
-.collapseButton:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--mantine-color-blue-light);
-}
+    .collapseButton:hover {
+        background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+        color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+    }
+    .collapseButton:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--mantine-color-blue-light);
+    }

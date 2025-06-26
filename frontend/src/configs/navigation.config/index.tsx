@@ -1,5 +1,5 @@
 import type { NavigationTree } from '../../@types/navigation'
-import { IconHome, IconHomeFilled, IconBalloon, IconBalloonFilled } from '@tabler/icons-react'
+import { IconHome, IconHomeFilled, IconChartBubble, IconChartBubbleFilled, IconLayoutGrid, IconLayoutGridFilled } from '@tabler/icons-react'
 
 const navigationConfig: NavigationTree[] = [
     {
@@ -17,17 +17,19 @@ const navigationConfig: NavigationTree[] = [
       path: '/demo',
       title: 'Demo',
       translateKey: '',
-      icon: IconBalloon,
-      iconActive: IconBalloonFilled,
+      icon: IconLayoutGrid,
+      iconActive: IconLayoutGridFilled,
       authority: [],
       subMenu: [
-        // {
-        //   key: 'semantic-plot',
-        //   path: '/semantic-plot',
-        //   title: 'Semantic Plot',
-        //   translateKey: '',
-        //   authority: []
-        // }
+        {
+          key: 'semantic-plot',
+          path: '/demo/semantic-plot',
+          title: 'Semantic Plot',
+          translateKey: '',
+          authority: [],
+          icon: IconChartBubble,
+          iconActive: IconChartBubbleFilled,
+        }
       ]
     },
   ];
