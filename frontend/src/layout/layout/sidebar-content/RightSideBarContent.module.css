@@ -11,6 +11,8 @@
 .sidebarMain {
     overflow-y: auto;
     flex: 1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 .sidebarSection {
     margin-bottom: var(--mantine-spacing-md);

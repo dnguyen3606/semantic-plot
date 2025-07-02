@@ -1,11 +1,14 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Node, { NodeProps, Position } from '../components/Node'
 import Connection from '../components/Connection';
 import { useNodesContext } from '../store/contexts/NodesContext';
 import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
 import { useNodeConnectionsContext } from '../store/contexts/NodeConnectionsContext';
-import { IconPlus } from '@tabler/icons-react';
+import { scrape } from '../utils/api';
+import { IconPlus, IconLink } from '@tabler/icons-react';
 import classes from './SemanticPlot.module.css';
+import { ActionIcon, Modal, Stack, TextInput, Text, Button, Notification } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
 const NODE_SIZE = 50
 
@@ -15,6 +18,11 @@ export default function SemanticPlot(){
     const { nodes, addNode, setNodes, getNode } = useNodesContext();
     const { selectNode } = useSelectedNodeContext();
     const { connections } = useNodeConnectionsContext();
+
+    const [opened, {close, open}] = useDisclosure(false);
+    const [url, setUrl] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
     const handleAdd = () => {
         const newNode = {
@@ -55,6 +63,22 @@ export default function SemanticPlot(){
     const handleDrop = (id: string, target: Position) => {
         handleMove(id, target);
     }
+
+    // handler for modal; add story for scraping via url
+    const handleScrape = async () => {
+        setLoading(true);
+        setFeedback(null);
+
+        try {
+            await scrape(url);
+            setFeedback({ type: 'success', message: 'URL successfully queued for scraping.' });
+            setUrl('');
+        } catch (error) {
+            setFeedback({ type: 'error', message: 'Failed to queue URL.' });
+        }
+
+        setLoading(false);
+    };
 
     // helper functions
     const moveNode = (id: string, target: Position) => {
@@ -159,13 +183,50 @@ export default function SemanticPlot(){
             {nodes.map((node) => (
                 <Node key={node.id} {...node} onClick={handleClick} onDrag={handleDrag} onDrop={handleDrop}/>
             ))}
-            
-            <button
-                onClick={handleAdd}
-                className={classes.addButton}
-            >
-                <IconPlus size={24} strokeWidth={2} />
-            </button>
+
+
+            <Stack className={classes.buttonContainer}>
+                <ActionIcon
+                    onClick={handleAdd}
+                    size="lg"
+                >
+                    <IconPlus strokeWidth={2} />
+                </ActionIcon>
+                <ActionIcon
+                    size="lg"
+                    onClick={open}
+                >
+                    <IconLink strokeWidth={2}/>
+                </ActionIcon>
+            </Stack>
+
+            <Modal opened={opened} onClose={close} title="Add Story from URL">
+                <TextInput 
+                    label="Story URL" 
+                    placeholder="https://www.royalroad.com/fiction/your-story-slug"
+                    value={url}
+                    onChange={(event) => setUrl(event.currentTarget.value)}
+                    disabled={loading}
+                    required
+                />
+
+                <Text size="xs" mt="xs" c="dimmed">
+                    This only queues the story for scraping. Please wait a few minutes after a successful queue for the story to be added to the vector database.
+                </Text>
+                <Text size="xs" mt="xs" c="red">
+                    Only accepts <strong>RoyalRoad.com</strong> links currently.
+                </Text>
+                <Button mt="md" onClick={handleScrape} loading={loading}>
+                    Submit
+                </Button>
+
+                {feedback && (
+                    <Notification mt="md" color={feedback.type === 'success' ? 'teal' : 'red'} onClose={() => setFeedback(null)}>
+                        {feedback.message}
+                    </Notification>
+                )}
+
+            </Modal>
         </div>
     )
   }

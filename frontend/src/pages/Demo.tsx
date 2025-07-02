@@ -3,7 +3,7 @@ import { IconChartBubble } from "@tabler/icons-react";
 
 export default function Demo(){
     return (
-        <Container>
+        <Container size="lg" py="xl">
             <Stack gap="xl" align="center">
                 <Title>
                     Project Demonstrations

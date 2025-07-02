@@ -8,6 +8,8 @@
 .navbarMain {
     overflow-y: auto;
     flex: 1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .header {

@@ -1,82 +1,34 @@
-import json
+import re
+
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-import numpy as np
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
 from .models import Story
-from pinecone import Pinecone
-from datetime import datetime
-import os
-from openai import OpenAI
-from transformers import AutoTokenizer
+from .tasks import scrape_and_embed
+from .utils import embed, embed_all_chapters, upsert, index
 
-PINECONE=os.getenv('PINECONE')
-pc = Pinecone(api_key=PINECONE)
-index = pc.Index("story")
-client = OpenAI(
-    base_url="https://api.studio.nebius.com/v1/",
-    api_key=os.environ.get("NB_KEY")
-)
-tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-mistral-7b-instruct")
 
-def embed(text: str):
-    try:
-        response = client.embeddings.create(
-            model="intfloat/e5-mistral-7b-instruct",
-            input=text,
-        )
-        return np.array(json.loads(response.to_json())['data'][0]['embedding'], dtype=float).tolist()
-    except Exception as error:
-        return JsonResponse({"error": error}, status=503)
-
-def chunk_text(text: str, max_tokens=32000, overlap=0):
-    tokens = tokenizer.encode(text, add_special_tokens=True)
-    if len(tokens) <= max_tokens:
-        return [text]
-    
-    chunks = []
-    start = 0
-    while start < len(tokens):
-        end = min(start + max_tokens, len(tokens))
-        chunk_tokens = tokens[start:end]
-        chunk_text = tokenizer.decode(chunk_tokens, skip_special_tokens=True)
-        chunks.append(chunk_text)
-        if end == len(tokens):
-            break
-        start = end - overlap 
-    return chunks
-
+#deprecated
 def storyid_to_pinecone(request, story_id: int):
     story = get_object_or_404(Story, id=story_id)
     chapters = story.chapters.all().order_by('chapter_number')
 
     upsert(story, embed_all_chapters(chapters))
 
-    return JsonResponse({"message": "chapters processed successfully"})
+    return Response({"message": "chapters processed successfully"}, status=status.HTTP_200_OK)
 
-# for embedding a collection of chapters
-def embed_all_chapters(chapters):
-    content = " ".join([chapter.content for chapter in chapters])
-    chunks = chunk_text(content, max_tokens=2048, overlap=512)
-    embeddings = [embed(chunk) for chunk in chunks]
-
-    return embeddings
-
-# for upserting specifically a story embedding with its story id
-def upsert(story, embeddings):
-    for i, embedding in enumerate(embeddings):
-        index.upsert(
-            vectors=[
-                {
-                    "id": f"{story.title}_{i}",
-                    "values": embedding,
-                    "metadata": {"id": story.id, "timestamp": datetime.now().isoformat()}
-                }
-            ]
-        )
-
+@api_view(["POST"])
 def query(request):
-    content = request.body.decode('utf-8')
-    content_embedding = embed(content)
+    content = request.data.get('content')
+    if not content:
+        return Response({'error': "Request missing 'content'"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        content_embedding = embed(content)
+    except RuntimeError as e:
+        return Response({'error': str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
     unique_results = {}
     while len(unique_results) < 3:
@@ -105,6 +57,25 @@ def query(request):
             "score": match["score"], 
         })
 
-    return JsonResponse(stories, safe=False)
+    return Response(stories, status=status.HTTP_200_OK)
 
+
+ROYALROAD_URL_PATTERN = re.compile(r"^https://www\.royalroad\.com/fiction/\d+/[\w-]+/?$")
+@api_view(["POST"])
+def scrape(request):
+    url = request.data.get('url')
+    if not url:
+        return Response({'error': "Request missing 'url'"}, status=status.HTTP_400_BAD_REQUEST)
     
+    if not ROYALROAD_URL_PATTERN.match(url):
+        return Response({'error': "URL must be a valid RoyalRoad fiction URL (e.g., https://www.royalroad.com/fiction/your-story-slug)"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        scrape_and_embed(url)
+
+        return Response({
+            'status': "scheduled",
+            'url': url,
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

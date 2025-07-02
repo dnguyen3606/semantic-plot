@@ -34,7 +34,7 @@ class DjangoPipeline:
 
     def handle_chapter(self, item):
         story, _ = Story.objects.get_or_create(url=item['story_url'])
-        Chapter.objects.get_or_create(
+        Chapter.objects.update_or_create(
             story = story,
             chapter_number = item['chapter_number'],
             defaults={

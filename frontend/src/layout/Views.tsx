@@ -6,6 +6,7 @@ import {/*protectedRoutes,*/ publicRoutes} from "../configs/routes.config";
 import AppRoute from "../routes/AppRoute";
 import PublicRoute from "../routes/PublicRoute";
 import LoadingScreen from "./loading-screen/LoadingScreen";
+import classes from "./Views.module.css";
 
 interface ViewsProps {
   pageContainerType?: 'default' | 'gutterless' | 'contained'
@@ -67,15 +68,7 @@ const AllRoutes = (_props: AllRoutesProps) => {
 const Views = (props: ViewsProps) => {
   return (
     <div
-      style={{
-        padding: '2rem',
-        backgroundColor: '#ffffff',
-        flex: 1,
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-      }}
+      className={classes.viewsContainer}
     >
       <Suspense fallback={
         <LoadingScreen/>

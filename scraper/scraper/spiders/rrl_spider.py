@@ -1,6 +1,6 @@
 from datetime import datetime
 import scrapy
-from scraper.items import StoryItem, ChapterItem
+from ..items import StoryItem, ChapterItem
 
 # Example CLI 
 # scrapy crawl rrl_spider -a start_url="https://www.royalroad.com/fictions/best-rated"
