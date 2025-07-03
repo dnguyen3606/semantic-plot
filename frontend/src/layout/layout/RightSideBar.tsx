@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import DemoSideBarContent from './sidebar-content/DemoSideBarContent';
+import SemanticPlotSideBarContent from './sidebar-content/SemanticPlotSideBarContent';
 
 export default function RightSideBar() {
     const location = useLocation();
@@ -13,7 +13,7 @@ export default function RightSideBar() {
 
     const renderContent = () => {
         if (active.includes('semantic-plot')) {
-            return <DemoSideBarContent/>
+            return <SemanticPlotSideBarContent/>
         }
 
         return null;

@@ -3,7 +3,7 @@ import { NodeProps } from '../../components/Node'
 
 interface SelectedNodeContextValue {
     selectedNode?: NodeProps;
-    selectNode: (node: NodeProps) => void;
+    selectNode: (node?: NodeProps) => void;
 }
 
 const SelectedNodeContext = createContext<SelectedNodeContextValue | undefined>(undefined);

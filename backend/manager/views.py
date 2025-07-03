@@ -4,13 +4,13 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from background_task.models import Task
 
 from .models import Story
 from .tasks import scrape_and_embed
 from .utils import embed, embed_all_chapters, upsert, index
 
-
-#deprecated
+#soon to be deprecated
 def storyid_to_pinecone(request, story_id: int):
     story = get_object_or_404(Story, id=story_id)
     chapters = story.chapters.all().order_by('chapter_number')
@@ -70,6 +70,12 @@ def scrape(request):
     if not ROYALROAD_URL_PATTERN.match(url):
         return Response({'error': "URL must be a valid RoyalRoad fiction URL (e.g., https://www.royalroad.com/fiction/your-story-slug)"}, status=status.HTTP_400_BAD_REQUEST)
     
+    if Task.objects.filter(
+        task_name='manager.tasks.scrape_and_embed',
+        task_params__contains=f'"{url}"',
+    ).exists():
+        return Response({'status': "URL already queued for scraping."}, status=status.HTTP_200_OK)
+
     try:
         scrape_and_embed(url)
 

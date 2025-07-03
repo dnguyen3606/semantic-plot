@@ -2,11 +2,6 @@ import os, subprocess
 from django.conf import settings
 from background_task import background
 
-from scrapy.crawler import CrawlerRunner
-from scrapy.utils.project import get_project_settings
-from twisted.internet import reactor, defer
-
-from scraper.scraper.spiders.rrl_spider import RoyalRoadlSpiderSpider
 from .models import Story
 from .utils import embed_all_chapters, upsert
 

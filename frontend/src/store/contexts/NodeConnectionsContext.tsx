@@ -11,6 +11,7 @@ interface NodeConnectionsContextValue {
     addConnection: (connection: Connection) => void;
     removeConnection: (connection: Connection) => void;
     getConnection: (from: string, to: string) => Connection | undefined;
+    getConnections: (id: string) => Connection[] | undefined;
 }
 
 const NodeConnectionsContext = createContext<NodeConnectionsContextValue | undefined>(undefined);
@@ -28,11 +29,14 @@ export function NodeConnectionsProvider({ children }: { children: ReactNode }) {
         connections.find(connection =>
             (connection.from === id1 && connection.to === id2) ||
             (connection.from === id2 && connection.to === id1)
-    );
-
+        );
+    
+    const getConnections = (id: string): Connection[] | undefined => 
+        connections.filter(connection => connection.from === id || connection.to === id);
+    
     return (
         <NodeConnectionsContext.Provider
-            value={{ connections, addConnection, removeConnection, getConnection }}
+            value={{ connections, addConnection, removeConnection, getConnection, getConnections }}
         >
             {children}
         </NodeConnectionsContext.Provider>

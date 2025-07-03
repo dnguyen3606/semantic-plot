@@ -4,16 +4,19 @@ import { useNodesContext } from '../../../store/contexts/NodesContext';
 import { useSelectedNodeContext } from '../../../store/contexts/SelectedNodeContext';
 import { useNodeConnectionsContext } from '../../../store/contexts/NodeConnectionsContext';
 import { search } from '../../../utils/api';
-import { ActionIcon, TextInput, Textarea } from '@mantine/core';
+import { ActionIcon, TextInput, Textarea, Text, Center, Button, Group } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
-export default function DemoSideBarContent() {
-    const [collapsed, setCollapsed] = useState(false);
-    const { addNode, updateNode, getNode } = useNodesContext();
-    const { selectedNode } = useSelectedNodeContext();
-    const { addConnection, getConnection } = useNodeConnectionsContext();
+export default function SemanticPlotSideBarContent() {
+    const [collapsed, setCollapsed] = useState(true);
+
+    const { addNode, updateNode, getNode, removeNode } = useNodesContext();
+    const { selectedNode, selectNode } = useSelectedNodeContext();
+    const { addConnection, getConnection, getConnections, removeConnection } = useNodeConnectionsContext();
     const [title, setTitle] = useState('No story bubble selected');
     const [content, setContent] = useState('No node, no summary.');
+
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (selectedNode) {
@@ -32,6 +35,7 @@ export default function DemoSideBarContent() {
         if (!selectedNode) return;
 
         try {
+            setLoading(true);
             const stories = await search(`${title} + ${content}`);
             if (!stories) {
                 return; //add error toast later
@@ -57,6 +61,15 @@ export default function DemoSideBarContent() {
         } catch (error) {
             console.error("Query failed: ", error); // add error toast later
         }
+        setLoading(false);
+    }
+
+    const handleDelete = () => {
+        if (!selectedNode) return;
+        
+        getConnections(selectedNode.id)?.forEach(connection => removeConnection(connection));
+        removeNode(selectedNode.id);
+        selectNode(undefined);
     }
 
     // TODO: add WRITEABILITY check for nodeProps, alter between these two.
@@ -97,6 +110,13 @@ export default function DemoSideBarContent() {
             </div>
 
             {!collapsed && (
+                !selectedNode ? 
+                <Center>
+                    <Text size="md" mt="xs" c="dimmed"> 
+                        No node selected... 
+                    </Text>
+                </Center>
+                :
                 <div className={classes.sidebarMain}>
                     <div className={classes.sidebarSection}>
                         <div className={classes.sidebarHeader}>
@@ -118,15 +138,18 @@ export default function DemoSideBarContent() {
                             />
                         </div>
                     </div>
-                    <div style={{flexDirection: 'row'}}>
-                        <button className={classes.sidebarButton} onClick={handleSave}>
+                    <Group justify='center'>
+                        <Button onClick={handleSave}>
                             Save
-                        </button>
-                        <button className={classes.sidebarButton} onClick={semanticSearch}>
+                        </Button>
+                        <Button onClick={semanticSearch} loading={loading}>
                             Query
-                        </button>
-                    </div>
-                </div>
+                        </Button>
+                        <Button onClick={handleDelete} color="red">
+                            Delete
+                        </Button>
+                    </Group>
+                </div> 
             )}
         </div>
     )
