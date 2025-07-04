@@ -7,10 +7,11 @@ export interface NodeProps {
     title: string;
     content: string;
     position: Position;
-    writeable?: boolean;
     onClick?: (node: NodeProps) => void;
     onDrag?: (id: string, target: Position) => void;
     onDrop?: (id: string, target: Position) => void;
+    writeable?: boolean;
+    url?: string;
 }
 
 export interface Position {
@@ -20,7 +21,7 @@ export interface Position {
   
 const DRAG_THRESHOLD = 5;
 
-const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDrag, onDrop }) => {
+const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDrag, onDrop, writeable=true, url }) => {
     const nodeRef = useRef<HTMLDivElement>(null);
     const draggingRef = useRef(false);
     const offsetRef = useRef<Position>({ x: 0, y: 0 });
@@ -46,7 +47,7 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
         e.preventDefault();
     };
 
-    const handleMouseMove = (e: MouseEvent<Document>) => {
+    const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
         if (!onDrag) return;
         if (!draggingRef.current) return;
 
@@ -60,7 +61,7 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
         e.preventDefault();
     };
 
-    const handleMouseUp = (e: MouseEvent<Document>) => {
+    const handleMouseUp = (e: MouseEvent<HTMLDivElement>) => {
         if (!onClick || !onDrop) return;
         if (!draggingRef.current) return;
         
@@ -70,7 +71,7 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
         const distance = Math.sqrt(dx * dx + dy * dy);
     
         if (distance < DRAG_THRESHOLD && onClick) {
-            onClick({ id, title, content, position, onClick, onDrag, onDrop });
+            onClick({ id, title, content, position, onClick, onDrag, onDrop, writeable, url });
         } else if (onDrop) {
             const target: Position = {
                 x: e.pageX - offsetRef.current.x,

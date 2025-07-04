@@ -5,6 +5,7 @@ type Story = {
     title: string;
     summary: string;
     score: number;
+    url: string;
 }
 
 const API_BASE = "https://api.dwindled.dev"

@@ -6,6 +6,7 @@ import { useNodeConnectionsContext } from '../../../store/contexts/NodeConnectio
 import { search } from '../../../utils/api';
 import { ActionIcon, TextInput, Textarea, Text, Center, Button, Group } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { IconLink } from '@tabler/icons-react';
 
 export default function SemanticPlotSideBarContent() {
     const [collapsed, setCollapsed] = useState(true);
@@ -15,6 +16,8 @@ export default function SemanticPlotSideBarContent() {
     const { addConnection, getConnection, getConnections, removeConnection } = useNodeConnectionsContext();
     const [title, setTitle] = useState('No story bubble selected');
     const [content, setContent] = useState('No node, no summary.');
+    const [writeable, setWriteable] = useState(true);
+    const [url, setUrl] = useState('');
 
     const [loading, setLoading] = useState(false);
 
@@ -22,6 +25,8 @@ export default function SemanticPlotSideBarContent() {
         if (selectedNode) {
             setTitle(selectedNode.title);
             setContent(selectedNode.content);
+            setWriteable(selectedNode.writeable ?? true);
+            setUrl(selectedNode.url ?? '');
         }
     }, [selectedNode]);
 
@@ -29,6 +34,7 @@ export default function SemanticPlotSideBarContent() {
         if (!selectedNode) return;
 
         updateNode(selectedNode.id, {title: title, content: content});
+        getConnections(selectedNode.id)?.forEach(connection => removeConnection(connection));
     }
 
     async function semanticSearch() {
@@ -50,6 +56,8 @@ export default function SemanticPlotSideBarContent() {
                         x: getNode(selectedNode.id)!.position.x + Math.random() * 200 - 100, 
                         y: getNode(selectedNode.id)!.position.y + Math.random() * 200 - 100 
                     },
+                    writeable: false,
+                    url: story.url,
                 };
                 if (!getNode(story.id)) {
                     addNode(newNode);
@@ -71,30 +79,6 @@ export default function SemanticPlotSideBarContent() {
         removeNode(selectedNode.id);
         selectNode(undefined);
     }
-
-    // TODO: add WRITEABILITY check for nodeProps, alter between these two.
-    // return (
-    //     <div className={classes.sidebar}>
-    //         <div className={classes.sidebarMain}>
-    //             <div className={classes.sidebarSection}>
-    //                 <div className={classes.sidebarHeader}>
-    //                     {title}
-    //                 </div>
-    //             </div>
-    //             <div className={classes.sidebarSection}>
-    //                 <div className={classes.sidebarHeader}>
-    //                     Summary:
-    //                 </div>
-    //                 <div className={classes.sidebarText}>
-    //                     {content}
-    //                 </div>
-    //             </div>
-    //             <button className={classes.sidebarButton} onClick={handleSave}>
-    //                 Save
-    //             </button>
-    //         </div>
-    //     </div>
-    // )
 
     return (
         <div className={classes.sidebar} style={{ width: collapsed ? 'clamp(1rem, 4vw, 6rem)' : 'clamp(4rem, 20vw, 18rem)' }} >
@@ -120,7 +104,12 @@ export default function SemanticPlotSideBarContent() {
                 <div className={classes.sidebarMain}>
                     <div className={classes.sidebarSection}>
                         <div className={classes.sidebarHeader}>
-                            <TextInput value={title} onChange={(event) => setTitle(event.currentTarget.value)} placeholder='Enter title...'/>
+                            <TextInput 
+                                value={title} 
+                                onChange={(event) => setTitle(event.currentTarget.value)} 
+                                placeholder='Enter title...' 
+                                readOnly={!writeable}
+                            />
                         </div>
                     </div>
                     <div className={classes.sidebarSection}>
@@ -135,11 +124,12 @@ export default function SemanticPlotSideBarContent() {
                                 autosize
                                 minRows={4}
                                 maxRows={30}
+                                readOnly={!writeable}
                             />
                         </div>
                     </div>
                     <Group justify='center'>
-                        <Button onClick={handleSave}>
+                        <Button onClick={handleSave} disabled={!writeable}>
                             Save
                         </Button>
                         <Button onClick={semanticSearch} loading={loading}>
@@ -148,6 +138,11 @@ export default function SemanticPlotSideBarContent() {
                         <Button onClick={handleDelete} color="red">
                             Delete
                         </Button>
+                        {!writeable && url && (
+                            <Button component="a" href={url} target="_blank" rel="noopener noreferrer" leftSection={<IconLink/>} color="teal">
+                                Link
+                            </Button>
+                        )}
                     </Group>
                 </div> 
             )}

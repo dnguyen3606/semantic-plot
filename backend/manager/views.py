@@ -55,6 +55,7 @@ def query(request):
             "title": story.title,
             "summary": story.summary,
             "score": match["score"], 
+            "url": story.url,
         })
 
     return Response(stories, status=status.HTTP_200_OK)
