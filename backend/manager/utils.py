@@ -14,13 +14,16 @@ client = OpenAI(
     base_url="https://api.studio.nebius.com/v1/",
     api_key=os.environ.get("NB_KEY")
 )
-tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-mistral-7b-instruct")
+tokenizer = AutoTokenizer.from_pretrained(
+        "Qwen/Qwen3-Embedding-8B",
+        padding_side="left",
+    )
 
 
 def embed(text: str):
     try:
         response = client.embeddings.create(
-            model="intfloat/e5-mistral-7b-instruct",
+            model="Qwen/Qwen3-Embedding-8B",
             input=text,
         )
         return np.array(json.loads(response.to_json())['data'][0]['embedding'], dtype=float).tolist()
