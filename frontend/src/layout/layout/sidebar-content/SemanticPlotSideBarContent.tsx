@@ -30,6 +30,14 @@ export default function SemanticPlotSideBarContent() {
         }
     }, [selectedNode]);
 
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 100); 
+
+        return () => clearTimeout(timeout);
+    }, [collapsed]);
+
     const handleSave = () => {
         if (!selectedNode) return;
 

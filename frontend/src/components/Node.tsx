@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, MouseEvent } from 'react';
+import React, { useRef, useEffect, PointerEvent } from 'react';
 import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
 import styles from './Node.module.css'
 
@@ -25,11 +25,11 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
     const nodeRef = useRef<HTMLDivElement>(null);
     const draggingRef = useRef(false);
     const offsetRef = useRef<Position>({ x: 0, y: 0 });
-    const initialMouseRef = useRef<Position>({ x: 0, y: 0 });  
+    const initialPointerRef = useRef<Position>({ x: 0, y: 0 });  
 
     const { selectedNode } = useSelectedNodeContext();
     
-    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    const handlePointerDown = (e: PointerEvent) => {
         if (!onClick) return;
         if (e.button !== 0) return; // e.button == 0 for left mouse button
         if (!nodeRef.current) return;
@@ -40,14 +40,14 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
             x: e.pageX - (rect.left + window.scrollX),
             y: e.pageY - (rect.top + window.scrollY),
         };
-        initialMouseRef.current = { x: e.pageX, y: e.pageY };
+        initialPointerRef.current = { x: e.pageX, y: e.pageY };
         draggingRef.current = true;
 
         e.stopPropagation();
         e.preventDefault();
     };
 
-    const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    const handlePointerMove = (e: PointerEvent) => {
         if (!onDrag) return;
         if (!draggingRef.current) return;
 
@@ -61,13 +61,13 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
         e.preventDefault();
     };
 
-    const handleMouseUp = (e: MouseEvent<HTMLDivElement>) => {
+    const handlePointerUp = (e: PointerEvent) => {
         if (!onClick || !onDrop) return;
         if (!draggingRef.current) return;
         
         draggingRef.current = false;
-        const dx = e.pageX - initialMouseRef.current.x;
-        const dy = e.pageY - initialMouseRef.current.y;
+        const dx = e.pageX - initialPointerRef.current.x;
+        const dy = e.pageY - initialPointerRef.current.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
     
         if (distance < DRAG_THRESHOLD && onClick) {
@@ -85,19 +85,21 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
     };
     
     useEffect(() => {
-        document.addEventListener('mousemove', handleMouseMove as any);
-        document.addEventListener('mouseup', handleMouseUp as any);
-        
+        const node = nodeRef.current!;
+        node.addEventListener('pointerdown', handlePointerDown as any);
+        document.addEventListener('pointermove', handlePointerMove as any);
+        document.addEventListener('pointerup', handlePointerUp as any);
         return () => {
-            document.removeEventListener('mousemove', handleMouseMove as any);
-            document.removeEventListener('mouseup', handleMouseUp as any);
+            node.removeEventListener('pointerdown', handlePointerDown as any);
+            document.removeEventListener('pointermove', handlePointerMove as any);
+            document.removeEventListener('pointerup', handlePointerUp as any);
         };
     }, [draggingRef.current, content, title]);
     
     return (
         <div
             ref={nodeRef}
-            onMouseDown={handleMouseDown}
+            onPointerDown={handlePointerDown}
             className={`${styles.node} ${selectedNode?.id === id ? styles.selected : ''}`}
             style={{
                 position: 'absolute',

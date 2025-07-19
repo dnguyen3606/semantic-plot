@@ -21,7 +21,6 @@ const AppLayout: React.FC = () => {
         <RightSideBar/>
     </div>
     )
-
 }
 
 export function Layout() {

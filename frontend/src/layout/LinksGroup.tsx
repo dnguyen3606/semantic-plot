@@ -63,7 +63,7 @@ export function LinksGroup({
           navigate(path);
         }}
       >
-        <Group gap={0}>
+        <Group gap={0} className={classes.parentLabel}>
           {isParentActive ? 
             <IconActive className={classes.linkIcon} stroke={1.5} /> : 
             <Icon className={classes.linkIcon} stroke={1.5} />
@@ -72,7 +72,7 @@ export function LinksGroup({
         </Group>
         {hasLinks && (
           <ActionIcon
-            size="lg"
+            className={classes.dropdownChevron}
             variant="light"
             onClick={(event) => {
               event.stopPropagation();      
@@ -85,6 +85,8 @@ export function LinksGroup({
               style={{
                 transform: opened ? 'rotate(-90deg)' : undefined,
                 transition: 'transform 150ms ease',
+                height: '100%',
+                width: '100%',
               }}
             />
           </ActionIcon>

@@ -15,7 +15,7 @@ export default function LeftSideBar() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
-    }, 250); 
+    }, 100); 
 
     return () => clearTimeout(timeout);
   }, [collapsed]);
@@ -40,14 +40,14 @@ export default function LeftSideBar() {
 
       return (
         <Box my={10} key={index}>
-        <LinksGroup
-          initiallyOpened={isAnyLinkActive}
-          path={item.path}
-          icon={item.icon}
-          iconActive={item.iconActive}
-          label={item.title}
-          links={links}
-        />
+          <LinksGroup
+            initiallyOpened={isAnyLinkActive}
+            path={item.path}
+            icon={item.icon}
+            iconActive={item.iconActive}
+            label={item.title}
+            links={links}
+          />
         </Box>
       );
     } else {

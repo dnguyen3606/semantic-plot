@@ -12,6 +12,7 @@
     font-size: 1rem;
     font-weight: bold;
     color: white;
+    touch-action: none;
 }
 .node:hover {
   transform: scale(1.05);
