@@ -30,6 +30,7 @@ export default function SemanticPlotSideBarContent() {
             setCollapsed(false);
         } else {
             setCollapsed(true);
+            // consider saving when unselected? could replace save button at cost of user experience
         }
     }, [selectedNode]);
 
@@ -53,6 +54,8 @@ export default function SemanticPlotSideBarContent() {
 
         try {
             setLoading(true);
+            updateNode(selectedNode.id, {title: title, content: content});
+            getConnections(selectedNode.id)?.forEach(connection => removeConnection(connection));
             const stories = await search(`${title} + ${content}`);
             if (!stories) {
                 return; //add error toast later
