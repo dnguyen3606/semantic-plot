@@ -27,6 +27,9 @@ export default function SemanticPlotSideBarContent() {
             setContent(selectedNode.content);
             setWriteable(selectedNode.writeable ?? true);
             setUrl(selectedNode.url ?? '');
+            setCollapsed(false);
+        } else {
+            setCollapsed(true);
         }
     }, [selectedNode]);
 

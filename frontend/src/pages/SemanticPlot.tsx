@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import Node, { NodeProps, Position } from '../components/Node'
+import Node, { Position } from '../components/Node'
 import Connection from '../components/Connection';
 import { useNodesContext } from '../store/contexts/NodesContext';
 import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
@@ -34,10 +34,6 @@ export default function SemanticPlot(){
         addNode(newNode);
     };
 
-    const handleClick = (node: NodeProps) => {
-        selectNode(node);
-    }
-
     // when number of nodes changes, check all node positions and correct if needed
     useEffect(() => {
         nodes.forEach(n => handleMove(n.id, n.position));
@@ -46,9 +42,11 @@ export default function SemanticPlot(){
     // set listener for window resize event: if window changes size, check all node positions and correct
     useEffect(() => {
         const handleResize = () => {
-            nodes.forEach((node) => {
-                handleMove(node.id, node.position);
-            });
+            window.setTimeout(() => {
+                nodes.forEach((node) => {
+                    handleMove(node.id, node.position);
+                })
+            }, 100);
         };
 
         window.addEventListener('resize', handleResize);
@@ -170,7 +168,15 @@ export default function SemanticPlot(){
     // end helpers
 
     return (
-        <div ref={containerRef} className={classes.container}>
+        <div 
+            ref={containerRef} 
+            className={classes.container} 
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    selectNode(undefined);
+                }
+            }}
+        >
             {connections.map(({from, to, score}) => {
                 return <Connection 
                     key={`${from}-${to}-${getNode(from)?.position.x}-${getNode(from)?.position.y}-${getNode(to)?.position.x}-${getNode(to)?.position.y}`} 
@@ -181,7 +187,7 @@ export default function SemanticPlot(){
             })}
 
             {nodes.map((node) => (
-                <Node key={node.id} {...node} onClick={handleClick} onDrag={handleDrag} onDrop={handleDrop}/>
+                <Node key={node.id} {...node} onClick={() => selectNode(node)} onDrag={handleDrag} onDrop={handleDrop}/>
             ))}
 
 
@@ -189,18 +195,20 @@ export default function SemanticPlot(){
                 <ActionIcon
                     onClick={handleAdd}
                     size="lg"
+                    title="Add a node"
                 >
                     <IconPlus strokeWidth={2} />
                 </ActionIcon>
                 <ActionIcon
                     size="lg"
                     onClick={open}
+                    title="Add a story to the database"
                 >
                     <IconLink strokeWidth={2}/>
                 </ActionIcon>
             </Stack>
 
-            <Modal opened={opened} onClose={close} title="Add Story from URL">
+            <Modal opened={opened} onClose={close} title="Add Story to the Database">
                 <TextInput 
                     label="Story URL" 
                     placeholder="https://www.royalroad.com/fiction/your-story-slug"
@@ -211,7 +219,7 @@ export default function SemanticPlot(){
                 />
 
                 <Text size="xs" mt="xs" c="dimmed">
-                    This only queues the story for scraping. Please wait a few minutes after a successful queue for the story to be added to the vector database.
+                    This only queues the story to be vectorized. Please wait a few minutes after a successful queue for the story to be added to the vector database.
                 </Text>
                 <Text size="xs" mt="xs" c="red">
                     Only accepts <strong>RoyalRoad.com</strong> links currently.
