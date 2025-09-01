@@ -7,8 +7,8 @@ export type AppConfig = {
 
 const appConfig: AppConfig = {
   apiPrefix: '',
-  authenticatedEntryPath: '/demo',
-  unAuthenticatedEntryPath: '/demo',
+  authenticatedEntryPath: '/',
+  unAuthenticatedEntryPath: '/',
   locale: 'en',
 }
 

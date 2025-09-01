@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import {Group, Collapse, ActionIcon} from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
 import classes from './LinksGroup.module.css';
@@ -19,7 +19,7 @@ export function LinksGroup({
                              label,
                              initiallyOpened,
                              path,
-                             links
+                             links,
                            }: LinksGroupProps) {
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
@@ -27,11 +27,47 @@ export function LinksGroup({
   const [active, setActive] = useState('');
   const location = useLocation();
   const isParentActive = location.pathname === path;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const parentLabelTextRef = useRef<HTMLSpanElement>(null);
+  const chevronRef = useRef<HTMLButtonElement>(null);
+  const [isSmall, setIsSmall] = useState(false);
 
   useEffect(() => {
     const currentPath = location.pathname;
     setActive(currentPath);
   }, [location.pathname]);
+
+  useEffect(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      function checkOverlap() {
+        if (!parentLabelTextRef.current || !chevronRef.current) return;
+
+        const textRect = parentLabelTextRef.current.getBoundingClientRect();
+        const chevronRect = chevronRef.current.getBoundingClientRect();
+
+        const overlap = textRect.right > chevronRect.left;
+
+        if (overlap) {
+          setOpened(true); 
+          setIsSmall(true); 
+        } else {
+          setIsSmall(false);
+        }
+      }
+
+      const resizeObserver = new ResizeObserver(() => {
+        checkOverlap();
+      });
+
+      resizeObserver.observe(container);
+
+      return () => {
+          resizeObserver.unobserve(container);
+          resizeObserver.disconnect();
+      };
+  }, []);
 
   const items = (hasLinks ? links : []).map((link) => {
     const IconComponent = link.link === active ? link.iconActive : link.icon;
@@ -53,7 +89,7 @@ export function LinksGroup({
   });
 
   return (
-    <div style={{marginBottom:'0.8rem'}}>
+    <div style={{marginBottom:'0.8rem'}} ref={containerRef}>
       <Group
         justify="space-between"
         className={classes.parent}
@@ -68,17 +104,19 @@ export function LinksGroup({
             <IconActive className={classes.linkIcon} stroke={1.5} /> : 
             <Icon className={classes.linkIcon} stroke={1.5} />
           }
-          <span>{label}</span>
+          <span ref={parentLabelTextRef}>{label}</span>
         </Group>
         {hasLinks && (
           <ActionIcon
             className={classes.dropdownChevron}
+            ref={chevronRef}
             variant="light"
             onClick={(event) => {
               event.stopPropagation();      
               setOpened((o) => !o);
             }}
             color={isParentActive ? 'blue' : 'gray'}
+            style={{ visibility: isSmall ? 'hidden' : 'visible' }}
           >
             <IconChevronRight
               stroke={1.5}

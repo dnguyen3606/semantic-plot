@@ -2,7 +2,6 @@ import classes from './Connection.module.css'
 import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
 import { useNodesContext } from '../store/contexts/NodesContext';
 import { useNodeConnectionsContext } from '../store/contexts/NodeConnectionsContext';
-//import { useEffect, useState } from 'react';
 
 interface ConnectionProps {
   from: string;
@@ -10,7 +9,7 @@ interface ConnectionProps {
   score?: number;
 }
 
-export default function Connection({ from, to, score=0.8 }: ConnectionProps) {
+const Connection = ({ from, to, score=0.8 }: ConnectionProps) => {
     const { selectedNode } = useSelectedNodeContext();
     const { getNode } = useNodesContext();
     const { removeConnection } = useNodeConnectionsContext();
@@ -69,3 +68,5 @@ export default function Connection({ from, to, score=0.8 }: ConnectionProps) {
         </svg>
     );
 }
+
+export default Connection;

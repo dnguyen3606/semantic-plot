@@ -14,6 +14,7 @@ const NODE_SIZE = 50
 
 export default function SemanticPlot(){
     const containerRef = useRef<HTMLDivElement>(null); 
+    const [size, setSize] = useState({ width: 0, height: 0 })
 
     const { nodes, addNode, setNodes, getNode } = useNodesContext();
     const { selectNode } = useSelectedNodeContext();
@@ -24,6 +25,35 @@ export default function SemanticPlot(){
     const [loading, setLoading] = useState(false);
     const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
+    // when number of nodes changes, check all node positions and correct if needed
+    useEffect(() => {
+        nodes.forEach(n => handleMove(n.id, n.position));
+    }, [nodes.length]);
+
+    // set listener for window resize event: if window changes size, check all node positions and correct
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const resizeObserver = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                const { width, height } = entry.contentRect;
+                setSize({ width, height });
+            }
+        });
+
+        resizeObserver.observe(container);
+
+        return () => {
+            resizeObserver.unobserve(container);
+            resizeObserver.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
+        nodes.forEach(n => handleMove(n.id, n.position));
+    }, [size]);
+
     const handleAdd = () => {
         const newNode = {
             id: crypto.randomUUID(),
@@ -33,25 +63,6 @@ export default function SemanticPlot(){
         };
         addNode(newNode);
     };
-
-    // when number of nodes changes, check all node positions and correct if needed
-    useEffect(() => {
-        nodes.forEach(n => handleMove(n.id, n.position));
-    }, [nodes.length]);
-
-    // set listener for window resize event: if window changes size, check all node positions and correct
-    useEffect(() => {
-        const handleResize = () => {
-            window.setTimeout(() => {
-                nodes.forEach((node) => {
-                    handleMove(node.id, node.position);
-                })
-            }, 100);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [nodes]);
 
     // wrapper, define how nodes should behave when dragged and dropped on Demo page
     const handleDrag = (id: string, target: Position) => {

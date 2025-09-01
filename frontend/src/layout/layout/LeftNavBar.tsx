@@ -13,14 +13,6 @@ export default function LeftSideBar() {
   const [active, setActive] = useState('');
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 100); 
-
-    return () => clearTimeout(timeout);
-  }, [collapsed]);
-
-  useEffect(() => {
     const currentPath = location.pathname.split('/')[1];
     setActive(currentPath);
   }, [location.pathname]);

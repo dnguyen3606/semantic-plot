@@ -1,10 +1,10 @@
 import type { NavigationTree } from '../../@types/navigation'
-import { IconHome, IconHomeFilled, IconChartBubble, IconChartBubbleFilled, IconLayoutGrid, IconLayoutGridFilled } from '@tabler/icons-react'
+import { IconHome, IconHomeFilled, IconChartBubble, IconChartBubbleFilled, IconLayoutGrid, IconLayoutGridFilled, IconCompass, IconCompassFilled } from '@tabler/icons-react'
 
 const navigationConfig: NavigationTree[] = [
     {
       key: 'home',
-      path: '/home',
+      path: '/',
       title: 'Home',
       translateKey: '',
       icon: IconHome,
@@ -29,6 +29,15 @@ const navigationConfig: NavigationTree[] = [
           authority: [],
           icon: IconChartBubble,
           iconActive: IconChartBubbleFilled,
+        },
+        {
+          key: 'aino',
+          path: '/demo/aino',
+          title: 'aino',
+          translateKey: '',
+          authority: [],
+          icon: IconCompass,
+          iconActive: IconCompassFilled,
         }
       ]
     },

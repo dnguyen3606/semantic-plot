@@ -1,18 +1,18 @@
 .node {
-    width: rem(50px);
-    height: rem(50px);
-    border-radius: 50%;
-    border: rem(1px) solid #000;
-    background-color: #62c1ec;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    touch-action: none;
+  width: rem(50px);
+  height: rem(50px);
+  border-radius: 50%;
+  border: rem(1px) solid #000;
+  background-color: #62c1ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  touch-action: none;
 }
 .node:hover {
   transform: scale(1.05);

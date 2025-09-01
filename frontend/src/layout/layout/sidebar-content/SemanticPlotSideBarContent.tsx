@@ -34,14 +34,6 @@ export default function SemanticPlotSideBarContent() {
         }
     }, [selectedNode]);
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-        }, 100); 
-
-        return () => clearTimeout(timeout);
-    }, [collapsed]);
-
     const handleSave = () => {
         if (!selectedNode) return;
 
@@ -54,8 +46,12 @@ export default function SemanticPlotSideBarContent() {
 
         try {
             setLoading(true);
-            updateNode(selectedNode.id, {title: title, content: content});
-            getConnections(selectedNode.id)?.forEach(connection => removeConnection(connection));
+            
+            if (getNode(selectedNode.id)?.title !== title || getNode(selectedNode.id)?.content !== content) {
+                updateNode(selectedNode.id, {title: title, content: content});
+                getConnections(selectedNode.id)?.forEach(connection => removeConnection(connection));
+            }
+
             const stories = await search(`${title} + ${content}`);
             if (!stories) {
                 return; //add error toast later
