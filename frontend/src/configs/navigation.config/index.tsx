@@ -30,15 +30,15 @@ const navigationConfig: NavigationTree[] = [
           icon: IconChartBubble,
           iconActive: IconChartBubbleFilled,
         },
-        {
-          key: 'aino',
-          path: '/demo/aino',
-          title: 'aino',
-          translateKey: '',
-          authority: [],
-          icon: IconCompass,
-          iconActive: IconCompassFilled,
-        }
+        // {
+        //   key: 'aino',
+        //   path: '/demo/aino',
+        //   title: 'aino',
+        //   translateKey: '',
+        //   authority: [],
+        //   icon: IconCompass,
+        //   iconActive: IconCompassFilled,
+        // }
       ]
     },
   ];

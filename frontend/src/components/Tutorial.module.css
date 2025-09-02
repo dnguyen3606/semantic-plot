@@ -1,0 +1,41 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.highlight {
+  position: fixed;
+  border-radius: 6px;
+  z-index: 1003;
+  outline: 3px solid rgba(255,255,255,0.85);
+  box-shadow: 0 0 8px 3px rgba(255, 255, 255, 0.7);
+  background: transparent;
+  transition: all 150ms ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.overlay:hover ~ .highlight {
+  box-shadow: 0 0 15px 5px rgba(255, 255, 255, 1);
+  animation: pulseOutline 1.2s infinite;
+  transform: scale(1.05);
+}
+
+@keyframes pulseOutline {
+  0%, 100% { box-shadow: 0 0 8px 3px rgba(255, 255, 255, 0.7); }
+  50% { box-shadow: 0 0 12px 5px rgba(255, 255, 255, 1); }
+}
+
+/* .controls { may add with tooltips later for instructional tutorial
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1003;
+  display: flex;
+  gap: 8px;
+} */

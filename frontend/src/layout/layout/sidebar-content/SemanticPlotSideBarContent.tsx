@@ -115,6 +115,7 @@ export default function SemanticPlotSideBarContent() {
                     <div className={classes.sidebarSection}>
                         <div className={classes.sidebarHeader}>
                             <TextInput 
+                                className="node-title-input"
                                 value={title} 
                                 onChange={(event) => setTitle(event.currentTarget.value)} 
                                 placeholder='Enter title...' 
@@ -128,6 +129,7 @@ export default function SemanticPlotSideBarContent() {
                         </div>
                         <div className={classes.sidebarText}>
                             <Textarea 
+                                className="node-content-input"
                                 value={content} 
                                 onChange={(event) => setContent(event.currentTarget.value)} 
                                 placeholder='Enter content...' 
@@ -142,7 +144,7 @@ export default function SemanticPlotSideBarContent() {
                         <Button onClick={handleSave} disabled={!writeable}>
                             Save
                         </Button>
-                        <Button onClick={semanticSearch} loading={loading}>
+                        <Button className="query-button" onClick={semanticSearch} loading={loading}>
                             Query
                         </Button>
                         <Button onClick={handleDelete} color="red">

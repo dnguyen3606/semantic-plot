@@ -100,7 +100,7 @@ const Node: React.FC<NodeProps> = ({ id, title, content, position, onClick, onDr
         <div
             ref={nodeRef}
             onPointerDown={handlePointerDown}
-            className={`${styles.node} ${selectedNode?.id === id ? styles.selected : ''}`}
+            className={`node ${styles.node} ${selectedNode?.id === id ? styles.selected : ''}`}
             style={{
                 position: 'absolute',
                 left: position.x,

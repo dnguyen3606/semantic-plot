@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Node, { Position } from '../components/Node'
 import Connection from '../components/Connection';
+import Tutorial, { Step } from '../components/Tutorial';
 import { useNodesContext } from '../store/contexts/NodesContext';
 import { useSelectedNodeContext } from '../store/contexts/SelectedNodeContext';
 import { useNodeConnectionsContext } from '../store/contexts/NodeConnectionsContext';
@@ -16,6 +17,8 @@ export default function SemanticPlot(){
     const containerRef = useRef<HTMLDivElement>(null); 
     const [size, setSize] = useState({ width: 0, height: 0 })
 
+    const showTutorial = !(localStorage.getItem('tutorial-semantic-plot') === 'true') ? true : false
+
     const { nodes, addNode, setNodes, getNode } = useNodesContext();
     const { selectNode } = useSelectedNodeContext();
     const { connections } = useNodeConnectionsContext();
@@ -24,6 +27,30 @@ export default function SemanticPlot(){
     const [url, setUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    const steps: Step[] = [
+        {
+            selector: '.add-node-button', 
+            waitFor: 'click',
+        },
+        {
+            selector: '.node', 
+            highlightAll: true, 
+            waitFor: 'click', 
+        },
+        {
+            selector: '.node-title-input', 
+            waitFor: 'input', 
+        },
+        {
+            selector: '.node-content-input',
+            waitFor: 'input', 
+        },
+        {
+            selector: '.query-button', 
+            waitFor: 'click',
+        },
+    ];
 
     // when number of nodes changes, check all node positions and correct if needed
     useEffect(() => {
@@ -207,6 +234,7 @@ export default function SemanticPlot(){
                     onClick={handleAdd}
                     size="lg"
                     title="Add a node"
+                    className="add-node-button"
                 >
                     <IconPlus strokeWidth={2} />
                 </ActionIcon>
@@ -246,6 +274,13 @@ export default function SemanticPlot(){
                 )}
 
             </Modal>
+
+            {showTutorial && (
+                <Tutorial
+                    id="tutorial-semantic-plot"
+                    steps={steps}
+                />
+            )}
         </div>
     )
   }
